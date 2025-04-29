@@ -1,25 +1,46 @@
+import type { StandoffTableRow } from '../types';
+import { standoff2xml } from '../conversion';
 import { createPositionTable } from './position-table';
-import type { StandoffTableRow } from './types';
-import { standoff2xml } from './util';
 
-export const StandoffTable = (rows: StandoffTableRow[]) => {
+export const StandoffTable = (rows: StandoffTableRow[], namespace = 'http://www.tei-c.org/ns/1.0') => {
 
   const table = createPositionTable(rows); 
 
   const createElement = (tag: string, attrib?: Record<string, string>): Element => {
-    const el = document.createElementNS('http://www.tei-c.org/ns/1.0', tag);
+    const el = document.createElementNS(namespace, tag);
     
     if (attrib) {
       Object.entries(attrib).forEach(([key, value]) => {
-        if (key === 'xml:id') {
+        if (key === 'xml:id')
           el.setAttributeNS('http://www.w3.org/XML/1998/namespace', 'id', value);
-        } else {
+        else
           el.setAttribute(key, value);
-        }
       });
     }
     
     return el;
+  }
+
+  const replaceEl = (oldEl: Element, newEl: Element) => {
+    const secondParent = oldEl.parentNode;
+    
+    if (secondParent === null) {
+      // Do nothing
+    } else {
+      // Copy tail text if needed
+      if (oldEl.nextSibling && oldEl.nextSibling.nodeType === Node.TEXT_NODE) {
+        if (oldEl.nextSibling.textContent) {
+          const nextSibling = document.createTextNode(oldEl.nextSibling.textContent);
+          if (oldEl.nextSibling.nextSibling) {
+            secondParent.insertBefore(nextSibling, oldEl.nextSibling.nextSibling);
+          } else {
+            secondParent.appendChild(nextSibling);
+          }
+        }
+      }
+      
+      secondParent.replaceChild(newEl, oldEl);
+    }
   }
 
   const getParents = (begin: number, end: number, depth: number | null = null): Element[] => {
@@ -85,81 +106,6 @@ export const StandoffTable = (rows: StandoffTableRow[]) => {
     
     return Array.from(children);
   }
-
-  const replaceEl = (oldEl: Element, newEl: Element) => {
-    const secondParent = oldEl.parentNode;
-    
-    if (secondParent === null) {
-      // Do nothing
-    } else {
-      // Copy tail text if needed
-      if (oldEl.nextSibling && oldEl.nextSibling.nodeType === Node.TEXT_NODE) {
-        if (oldEl.nextSibling.textContent) {
-          const nextSibling = document.createTextNode(oldEl.nextSibling.textContent);
-          if (oldEl.nextSibling.nextSibling) {
-            secondParent.insertBefore(nextSibling, oldEl.nextSibling.nextSibling);
-          } else {
-            secondParent.appendChild(nextSibling);
-          }
-        }
-      }
-      
-      secondParent.replaceChild(newEl, oldEl);
-    }
-  }
-
-  const recreateSubtree = (parent: Element) => {
-    // Extract part of the standoff table that needs to be recreated
-    const parentRows = table.rows.filter(row => row.el === parent);
-    const parentBeginIdx = table.rows.indexOf(parentRows[0]);
-    const parentEndIdx = table.rows.indexOf(parentRows[parentRows.length - 1]);
-
-    const toUpdate = table.rows.slice(parentBeginIdx, parentEndIdx + 1);
-    
-    // Recreate the subtree
-    const [newParentEl, oldEls2newEls] = standoff2xml(toUpdate);
-    
-    for (const [oldEl, newEl] of oldEls2newEls.entries()) {      
-      table.setEl(oldEl, { el: newEl });
-    }
-
-    console.log('replacing', parent, newParentEl);
-    
-    replaceEl(parent, newParentEl);
-  }
-
-  const addInlineElement = (
-    begin: number, 
-    end: number, 
-    tag: string, 
-    depth: number | null = null, 
-    attrib: Record<string, string> | null = {}, 
-    insertIndexAtPos: number = 0
-  ) => {
-    const newEl = createElement(tag, attrib);
-    const parents = getParents(begin, end, depth);
-    const parent = parents[parents.length - 1];
-    
-    // Set depth and handle children's depth
-    const newDepth = depth !== null ? depth : parents.length;
-    const children = getChildren(begin, end, newDepth);
-    
-    // Increment depth for children
-    for (const child of children) {
-      const childRow = table.rows.find(row => row.el === child);
-      if (childRow && childRow.depth !== null)
-        table.setEl(child, { depth: childRow.depth + 1 });
-    }
-    
-    if (begin === end) {
-      table.insertEmpty(begin, newEl, newDepth, insertIndexAtPos);
-    } else {
-      table.insertOpen(begin, newEl, newDepth);
-      table.insertClose(end, newEl, newDepth);
-    }
-    
-    recreateSubtree(parent);
-  }
   
   const getXPointer = (charOffset: number) => {
     const rowsBefore = table.rows.filter(row => row.position <= charOffset);
@@ -172,10 +118,72 @@ export const StandoffTable = (rows: StandoffTableRow[]) => {
     return`/${tags.join('/')}::${offset}`;
   }
 
+  const recreateSubtree = (parent: Element) => {
+    // Find the range of rows for this parent
+    const parentRows = table.rows.filter(row => row.el === parent);
+    if (parentRows.length === 0) return;
+
+    const firstIndex = table.rows.indexOf(parentRows[0]);
+    const lastIndex = table.rows.indexOf(parentRows[parentRows.length - 1]);
+
+    const toUpdate = table.rows.slice(firstIndex, lastIndex + 1);
+
+    // Recreate the subtree
+    const [newParentEl, oldElsToNewEls] = standoff2xml(toUpdate);
+
+    // Update the table with new elements
+    for (const [oldEl, newEl] of Object.entries(oldElsToNewEls)) {
+        table.setEl(oldEl as unknown as Element, { el: newEl });
+    }
+
+    replaceEl(parent, newParentEl);
+}
+
+  const addInline = (
+    begin: number,
+    end: number,
+    tag: string,
+    depth?: number,
+    attrib: Record<string, string> = {},
+    insertIndexAtPos: number = 0
+  ) => {
+    // Create new element
+    const newEl = createElement(tag, attrib);
+    
+    // Get parent context
+    const parents = getParents(begin, end, depth);
+    const parent = parents[parents.length - 1];
+
+    // Handle depth
+    const newDepth = depth ?? parents.length;
+
+    // Update children depths
+    const children = getChildren(begin, end, newDepth);
+    for (const child of children) {
+        const childRow = table.rows.find(row => row.el === child);
+        if (childRow) {
+            table.setEl(child, { depth: childRow.depth + 1 });
+        }
+    }
+
+    // Insert the new element
+    if (begin === end) {
+        table.insertEmpty(begin, newEl, newDepth, insertIndexAtPos);
+    } else {
+        table.insertOpen(begin, newEl, newDepth);
+        table.insertClose(end, newEl, newDepth);
+    }
+
+    console.log(table.rows);
+
+    // Recreate the affected subtree
+    recreateSubtree(parent);
+}
+
   return {
-    addInlineElement,
-    getXPointer,
-    rows: table.rows
+    rows,
+    addInline,
+    getXPointer
   }
 
 }

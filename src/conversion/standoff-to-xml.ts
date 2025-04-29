@@ -1,6 +1,6 @@
 import type { StandoffTableRow } from '../types';
 
-export const standoff2xml = (rows: StandoffTableRow[]) => {
+export const standoff2xml = (rows: StandoffTableRow[], namespace = 'http://www.tei-c.org/ns/1.0') => {
   const oldEls2newEls = new Map<Element, Element>();
   
   let rootEl: Element | null = null;
@@ -10,7 +10,7 @@ export const standoff2xml = (rows: StandoffTableRow[]) => {
     if ((row.row_type === 'open' || row.row_type === 'close' || row.row_type === 'empty') && row.el) {      
       if (!oldEls2newEls.get(row.el)) {
         const tagName = row.el.tagName.toLowerCase();
-        const newEl = document.createElementNS(row.el.namespaceURI || 'http://www.tei-c.org/ns/1.0', tagName);
+        const newEl = document.createElementNS(row.el.namespaceURI || namespace, tagName);
         
         // Copy attributes
         for (let i = 0; i < row.el.attributes.length; i++) {

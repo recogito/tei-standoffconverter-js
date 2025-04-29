@@ -37,6 +37,7 @@
       }
 
       #orig {
+        /* display: none; */
         color: red;
       }
     </style>
@@ -64,6 +65,8 @@
           const start = standoff.getXPointer(190);
           const end = standoff.getXPointer(200);
           console.log({ start, end });
+
+          standoff.addInline(190, 200, 'tei-span', { resp: 'Recogito' });
 
           const serialized = Converter.serializeStandoff(standoff);
           document.getElementById('serialized').appendChild(serialized);

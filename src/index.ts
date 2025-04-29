@@ -1,5 +1,5 @@
-import { StandoffTable } from './standoff';
-import { standoff2xml, xml2standoff } from './util';
+import { StandoffTable } from './core/standoff-table';
+import { standoff2xml, xml2standoff } from './conversion';
 
 const parseTEI = (element: Element) => {
   const standoff = xml2standoff(element);
