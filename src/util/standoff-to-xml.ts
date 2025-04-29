@@ -21,13 +21,11 @@ export const standoff2xml = (rows: StandoffTableRow[]) => {
         oldEls2newEls.set(row.el, newEl);
         
         // Track new root element
-        if (rootEl === null && row.depth === 0)
+        if (rootEl === null)
           rootEl = newEl;
       }
     }
   }
-
-  if (!rootEl) throw new Error('No root element');
   
   // Second pass: build the tree
   let stack: Element[] = [];
@@ -65,5 +63,5 @@ export const standoff2xml = (rows: StandoffTableRow[]) => {
   if (textBuffer && currentParent)
     currentParent.appendChild(document.createTextNode(textBuffer));
   
-  return rootEl;
+  return [rootEl, oldEls2newEls] as const;
 }

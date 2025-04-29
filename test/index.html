@@ -22,7 +22,11 @@
         justify-content: center;
       }
 
-      #orig, #cloned {
+      tei-span {
+        background-color: red;
+      }
+
+      #orig, #serialized {
         max-width: 800px;
         background-color: #fff;
         padding: 40px;
@@ -33,14 +37,14 @@
       }
 
       #orig {
-        display: none;
+        color: red;
       }
     </style>
   </head>
 
   <body>
     <div id="orig"></div>
-    <div id="cloned"></div>
+    <div id="serialized"></div>
 
     <script type="module">
       import CETEI from 'CETEIcean';
@@ -53,11 +57,14 @@
           document.getElementById('orig').appendChild(data);
           const el = document.getElementById('orig').firstChild;
 
-          const standoff = Converter.xml2standoff(el);
+          const standoff = Converter.parseTEI(el);
           // console.log('standoff', standoff);
 
-          const tree = Converter.standoff2xml(standoff);
-          document.getElementById('cloned').appendChild(tree);
+          // Insert a SPAN from 190-200
+          standoff.addInlineElement(190, 200, 'tei-span');
+
+          const serialized = Converter.serializeStandoff(standoff);
+          document.getElementById('serialized').appendChild(serialized);
         });
       };
     </script>
