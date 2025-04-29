@@ -22,7 +22,7 @@
         justify-content: center;
       }
 
-      #content {
+      #orig, #cloned {
         max-width: 800px;
         background-color: #fff;
         padding: 40px;
@@ -31,20 +31,33 @@
         border-width: 0 1px;
         position: relative;
       }
+
+      #orig {
+        display: none;
+      }
     </style>
   </head>
 
   <body>
-    <div id="content"></div>
+    <div id="orig"></div>
+    <div id="cloned"></div>
 
     <script type="module">
       import CETEI from 'CETEIcean';
+      import Converter from '../src/index.ts';
 
       window.onload = async function () {
         var CETEIcean = new CETEI();
 
         CETEIcean.getHTML5('paradise-lost.xml', data => {
-          document.getElementById('content').appendChild(data);
+          document.getElementById('orig').appendChild(data);
+          const el = document.getElementById('orig').firstChild;
+
+          const standoff = Converter.xml2standoff(el);
+          // console.log('standoff', standoff);
+
+          const tree = Converter.standoff2xml(standoff);
+          document.getElementById('cloned').appendChild(tree);
         });
       };
     </script>
