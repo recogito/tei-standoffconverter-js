@@ -60,8 +60,10 @@
           const standoff = Converter.parseTEI(el);
           // console.log('standoff', standoff);
 
-          // Insert a SPAN from 190-200
-          standoff.addInlineElement(190, 200, 'tei-span');
+          // 'first Book'
+          const start = standoff.getXPointer(190);
+          const end = standoff.getXPointer(200);
+          console.log({ start, end });
 
           const serialized = Converter.serializeStandoff(standoff);
           document.getElementById('serialized').appendChild(serialized);

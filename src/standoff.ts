@@ -160,9 +160,21 @@ export const StandoffTable = (rows: StandoffTableRow[]) => {
     
     recreateSubtree(parent);
   }
+  
+  const getXPointer = (charOffset: number) => {
+    const rowsBefore = table.rows.filter(row => row.position <= charOffset);
+
+    const parents = table.getContextAtPos(charOffset);
+    const tags = parents.map(el => (el as HTMLElement).dataset.origname);
+    
+    const offset = charOffset - rowsBefore[rowsBefore.length - 1].position;
+
+    return`/${tags.join('/')}::${offset}`;
+  }
 
   return {
     addInlineElement,
+    getXPointer,
     rows: table.rows
   }
 
