@@ -7,6 +7,16 @@ export const createQueryOperations = (rows: StandoffTableRow[]) => {
     .map(row => row.text || '')
     .join('');
 
+  const getJSON = () => rows
+    .map(row => ({
+      position: row.position,
+      type: row.row_type,
+      tag: row.el?.tagName,
+      // attributes: TODO!
+      depth: row.depth,
+      text: row.text
+    }));
+
   // Returns an array of parent elements at the given position
   const getParentsAtPos = (position: number): Element[] => {
     const rowsBefore = rows.filter(row => row.position <= position);
@@ -126,6 +136,7 @@ export const createQueryOperations = (rows: StandoffTableRow[]) => {
   return {
     getBoundaries,
     getChildren,
+    getJSON,
     getParents,
     getParentsAtPos,
     getText,
