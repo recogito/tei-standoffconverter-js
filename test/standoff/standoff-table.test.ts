@@ -43,7 +43,7 @@ describe('StandoffTable', () => {
 
     table.addInline(0, 5, 'child', { 'role': 'testing' });
 
-    const updatedText = table.getText();
+    const updatedText = table.text();
     expect(updatedText).toContain('Hello');
   });
 

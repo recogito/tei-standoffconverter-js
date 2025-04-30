@@ -1,14 +1,23 @@
 {
   "name": "@recogito/standoff-converter",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "description": "Converts XML between tree and standoff representation",
   "license": "MIT",
   "type": "module",
-  "main": "src/index.ts",
+  "main": "./dist/standoff-converter.umd.cjs",
+  "module": "./dist/standoff-converter.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
     "start": "vite",
     "build": "vite build",
     "test": "vitest"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/standoff-converter.js",
+      "require": "./dist/standoff-converter.umd.cjs"
+    }
   },
   "devDependencies": {
     "@types/node": "^22.15.3",
