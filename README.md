@@ -70,13 +70,13 @@ const xml = `
 const standoff = parseXML(xml);
 
 // Get plaintext
-const text = standoff.getText();
+const text = standoff.text();
 
 // Export XML
-const el = standoff.toXML();
+const el = standoff.xml();
 
 // Export XML, serialized to string
-const xml = standoff.toXMLString();
+const xml = standoff.xmlString();
 ```
 
 ## TODO

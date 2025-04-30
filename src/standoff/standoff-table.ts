@@ -120,20 +120,20 @@ export const createStandoffTable = (rows: StandoffTableRow[], namespace = 'http:
     }
   }
 
-  const toXML = () => {
+  const xml = () => {
     const [el, _] = standoff2xml(rows);
     return el;
   }
 
-  const toXMLString = () => serializeXML(toXML());
+  const xmlString = () => serializeXML(xml());
 
   return {
     rows: rows,
     addInline,
     getXPointer: query.getXPointer,
-    getText: query.getText,
-    toXML,
-    toXMLString
+    text: query.getText,
+    xml,
+    xmlString
   }
 
 }
