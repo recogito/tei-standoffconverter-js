@@ -8,7 +8,7 @@ export interface StandoffTableRow {
 
   depth: number | null;
 
-  text: string | null;
+  text?: string | null;
 
 }
 

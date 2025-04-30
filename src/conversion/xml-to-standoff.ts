@@ -1,4 +1,4 @@
-import { Constants } from '../constants';
+import { Constants } from '../dom';
 import type { StandoffTableRowType, StandoffTableRow } from '../types';
 
 interface FlatRecord {

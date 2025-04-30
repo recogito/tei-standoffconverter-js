@@ -1,3 +1,4 @@
+import { doc } from '../dom';
 import type { StandoffTableRow } from '../types';
 
 export const standoff2xml = (rows: StandoffTableRow[], namespace = 'http://www.tei-c.org/ns/1.0') => {
@@ -10,7 +11,7 @@ export const standoff2xml = (rows: StandoffTableRow[], namespace = 'http://www.t
     if ((row.row_type === 'open' || row.row_type === 'close' || row.row_type === 'empty') && row.el) {      
       if (!oldEls2newEls.get(row.el)) {
         const tagName = row.el.tagName.toLowerCase();
-        const newEl = document.createElementNS(row.el.namespaceURI || namespace, tagName);
+        const newEl = doc.createElementNS(row.el.namespaceURI || namespace, tagName);
         
         // Copy attributes
         for (let i = 0; i < row.el.attributes.length; i++) {
@@ -35,7 +36,7 @@ export const standoff2xml = (rows: StandoffTableRow[], namespace = 'http://www.t
   
   for (const row of rows) {
     if (row.position > lastPosition && textBuffer && currentParent) {
-      currentParent.appendChild(document.createTextNode(textBuffer));
+      currentParent.appendChild(doc.createTextNode(textBuffer));
       textBuffer = '';
     }
     
@@ -61,7 +62,7 @@ export const standoff2xml = (rows: StandoffTableRow[], namespace = 'http://www.t
   
   // Add remaining text
   if (textBuffer && currentParent)
-    currentParent.appendChild(document.createTextNode(textBuffer));
+    currentParent.appendChild(doc.createTextNode(textBuffer));
   
   return [rootEl, oldEls2newEls] as const;
 }
