@@ -43,9 +43,10 @@ window.onload = async function () {
 };
 ```
 
-## Usage in Node.js
+## TODO
 
-TODO...
+- **Support usage in Node.js**
+- **Add functionality for exporting/importing standoff information from JSON** (currently, the standoff table maintains references to `Element` objects, which wouldn't be serializable).
 
 
 
