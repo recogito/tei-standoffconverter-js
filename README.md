@@ -72,7 +72,7 @@ const standoff = parseXML(xml);
 
 ## TODO
 
-- **Support usage in Node.js**
+- **XML string serialization method** (currently, "serialization" returns an `Element` type object, which isn't directly usable in many cases, e.g. NodeJS + file storage etc.)
 - **Add functionality for exporting/importing standoff information from JSON** (currently, the standoff table maintains references to `Element` objects, which wouldn't be serializable).
 
 
