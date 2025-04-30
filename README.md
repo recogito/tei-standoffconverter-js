@@ -1,6 +1,6 @@
 # Recogito TEI/XML Standoff Converter
 
-Converts between TEI/XML and a standoff markup representation. The core logic was ported to 
+Converts between TEI/XML, and a plaintext and standoff markup representation. The core logic was ported to 
 TypeScript from the excellent Python [standoffconverter](https://github.com/standoff-nlp/standoffconverter) 
 by [@millawell](https://github.com/millawell).
 
