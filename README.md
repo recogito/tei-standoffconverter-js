@@ -37,8 +37,8 @@ window.onload = async function () {
     // Add inline tags at character positions
     standoff.addInline(190, 252, 'tei-span', { role: 'highlighting' });
 
-    const serialized = serializeStandoff(standoff);
-    document.getElementById('serialized').appendChild(serialized);
+    const teiElement = standoff.toXML();
+    document.getElementById('serialized').appendChild(teiElement);
   });
 };
 ```
@@ -68,12 +68,21 @@ const xml = `
 `;
 
 const standoff = parseXML(xml);
+
+// Get plaintext
+const text = standoff.getText();
+
+// Export XML
+const el = standoff.toXML();
+
+// Export XML, serialized to string
+const xml = standoff.toXMLString();
 ```
 
 ## TODO
 
-- **XML string serialization method** (currently, "serialization" returns an `Element` type object, which isn't directly usable in many cases, e.g. NodeJS + file storage etc.)
-- **Add functionality for exporting/importing standoff information from JSON** (currently, the standoff table maintains references to `Element` objects, which wouldn't be serializable).
+- **Add functionality for exporting/importing standoff information from JSON**. Currently, the standoff table maintains references to `Element` objects, which wouldn't be serializable.
+- **Handle existing standoff elements**. Currently, this library parses the markup only, but ignores `<standOff>` blocks in the TEI. Therefore, annotation offsets in existing standOff elements will break if the TEI is modified. We would need to parse the standOff elements, too, and incorprate them into the standoff map, in order to keep standoff pointers in sync with the TEI document.
 
 
 

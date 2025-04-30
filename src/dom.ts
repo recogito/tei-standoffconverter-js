@@ -1,6 +1,9 @@
 let doc: Document;
+
 let Constants: { ELEMENT_NODE: number; TEXT_NODE: number };
+
 let parseXML: (xml: string) => Element;
+let serializeXML: (element: Element) => string;
 
 if (typeof document !== 'undefined') {
   // Browser
@@ -15,6 +18,11 @@ if (typeof document !== 'undefined') {
     const parser = new DOMParser();
     const doc = parser.parseFromString(xml, 'text/xml');
     return doc.documentElement;
+  }
+
+  serializeXML = (element: Element) => {
+    const serializer = new XMLSerializer();
+    return serializer.serializeToString(element);
   }
 } else {
   // NodeJS
@@ -35,6 +43,11 @@ if (typeof document !== 'undefined') {
     const dom = new JSDOM(xml, { contentType: 'text/xml' });
     return dom.window.document.documentElement;
   }
+
+  serializeXML = (element: Element, options?: { pretty?: boolean, declaration?: boolean }) => {
+    const serializer = new jsdom.window.XMLSerializer();
+    return serializer.serializeToString(element);
+  }
 }
 
-export { doc, Constants, parseXML };
+export { doc, Constants, parseXML, serializeXML };

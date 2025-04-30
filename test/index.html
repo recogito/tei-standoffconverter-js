@@ -68,7 +68,7 @@
           // Highlight 'first Book'
           standoff.addInline(190, 252, 'tei-span', { role: 'highlighting' });
 
-          const serialized = Converter.serializeStandoff(standoff);
+          const serialized = standoff.toXML();
           document.getElementById('serialized').appendChild(serialized);
         });
       };

@@ -1,4 +1,4 @@
-import { doc } from '../dom';
+import { doc, serializeXML } from '../dom';
 import { standoff2xml } from '../conversion';
 import type { StandoffTableRow } from '../types';
 import { createModifyOperations, createQueryOperations } from './operations';
@@ -120,11 +120,20 @@ export const createStandoffTable = (rows: StandoffTableRow[], namespace = 'http:
     }
   }
 
+  const toXML = () => {
+    const [el, _] = standoff2xml(rows);
+    return el;
+  }
+
+  const toXMLString = () => serializeXML(toXML());
+
   return {
     rows: rows,
     addInline,
+    getXPointer: query.getXPointer,
     getText: query.getText,
-    getXPointer: query.getXPointer
+    toXML,
+    toXMLString
   }
 
 }
