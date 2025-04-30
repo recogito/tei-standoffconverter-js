@@ -37,7 +37,7 @@
       }
 
       #orig {
-        /* display: none; */
+        display: none;
         color: red;
       }
     </style>
@@ -58,15 +58,15 @@
           document.getElementById('orig').appendChild(data);
           const el = document.getElementById('orig').firstChild;
 
-          const standoff = Converter.parseTEI(el);
-          // console.log('standoff', standoff);
+          const standoff = Converter.parseXML(el);
 
-          // 'first Book'
+          // Get XPointer expression for 'first Book'
           const start = standoff.getXPointer(190);
           const end = standoff.getXPointer(200);
           console.log({ start, end });
 
-          standoff.addInline(190, 200, 'tei-span', { resp: 'Recogito' });
+          // Highlight 'first Book'
+          standoff.addInline(190, 244, 'tei-span', { role: 'highlighting' });
 
           const serialized = Converter.serializeStandoff(standoff);
           document.getElementById('serialized').appendChild(serialized);

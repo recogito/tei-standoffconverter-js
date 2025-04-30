@@ -1,14 +1,38 @@
-import type { StandoffTableRow } from '../types';
-import { createPositionTable } from '../core/position-table';
+import type { StandoffTableRow } from '../../types';
 
 export const createQueryOperations = (rows: StandoffTableRow[]) => {
-  const table = createPositionTable(rows);
-  
+
+  const getText = () => rows
+    .filter(row => row.row_type === 'text' && row.text)
+    .map(row => row.text || '')
+    .join('');
+
+  // Returns an array of parent elements at the given position
+  const getParentsAtPos = (position: number): Element[] => {
+    const rowsBefore = rows.filter(row => row.position <= position);
+    
+    const stack: Element[] = [];
+
+    for (const row of rowsBefore) {
+      if (row.row_type === 'open' && row.el) {
+        stack.push(row.el);
+      } else if (row.row_type === 'close' && row.el) {
+        // Remove the element if it's in the stack
+        const index = stack.findIndex(el => el === row.el);
+        if (index !== -1) {
+          stack.splice(index, 1);
+        }
+      }
+    }
+    
+    return stack;
+  }
+
   const getParents = (begin: number, end: number, depth: number | null = null): Element[] => {
-    const beginCtx = table.getContextAtPos(begin);
+    const beginCtx = getParentsAtPos(begin);
     const beginParents = depth !== null ? beginCtx.slice(0, depth) : beginCtx;
     
-    const endCtx = table.getContextAtPos(Math.max(begin, end - 1));
+    const endCtx = getParentsAtPos(Math.max(begin, end - 1));
     const endParents = depth !== null ? endCtx.slice(0, depth) : endCtx;
 
     // Check if contexts are the same
@@ -22,7 +46,7 @@ export const createQueryOperations = (rows: StandoffTableRow[]) => {
   }
 
   const getChildren = (begin: number, end: number, depth: number | null): Element[] => {
-    const beginCtx = table.getContextAtPos(begin);
+    const beginCtx = getParentsAtPos(begin);
     
     if (depth === null)
       depth = beginCtx.length;
@@ -30,18 +54,18 @@ export const createQueryOperations = (rows: StandoffTableRow[]) => {
     // Find index in table for the begin position
     let beginIdx: number;
 
-    const posExists = table.rows.some(row => row.position === begin);
+    const posExists = rows.some(row => row.position === begin);
     if (!posExists) {
       // Find the last text row before this position
       const slice = rows.filter(row => 
         row.position < begin && row.row_type === 'text'
       );
-      beginIdx = slice.length ? table.rows.indexOf(slice[slice.length - 1]) : 0;
+      beginIdx = slice.length ? rows.indexOf(slice[slice.length - 1]) : 0;
     } else {
-      const matches = table.rows.filter(row => 
+      const matches = rows.filter(row => 
         row.position === begin && row.row_type === 'text'
       );
-      beginIdx = matches.length ? table.rows.indexOf(matches[0]) : 0;
+      beginIdx = matches.length ? rows.indexOf(matches[0]) : 0;
     }
     
     // Find children
@@ -50,8 +74,8 @@ export const createQueryOperations = (rows: StandoffTableRow[]) => {
     let cRowPos = begin;
     let cRowIdx = beginIdx;
     
-    while (cRowPos <= end && cRowIdx < table.rows.length) {
-      const cRow = table.rows[cRowIdx];
+    while (cRowPos <= end && cRowIdx < rows.length) {
+      const cRow = rows[cRowIdx];
       cRowPos = cRow.position;
       
       if (cRow.row_type === 'open' && cRow.el) {
@@ -67,11 +91,11 @@ export const createQueryOperations = (rows: StandoffTableRow[]) => {
     
     return Array.from(children);
   }
-  
-  const getXPointer = (charOffset: number) => {
-    const rowsBefore = table.rows.filter(row => row.position <= charOffset);
 
-    const parents = table.getContextAtPos(charOffset);
+  const getXPointer = (charOffset: number) => {
+    const rowsBefore = rows.filter(row => row.position <= charOffset);
+
+    const parents = getParentsAtPos(charOffset);
     const tags = parents.map(el => (el as HTMLElement).dataset.origname);
     
     const offset = charOffset - rowsBefore[rowsBefore.length - 1].position;
@@ -80,8 +104,10 @@ export const createQueryOperations = (rows: StandoffTableRow[]) => {
   }
 
   return {
-    getParents,
     getChildren,
+    getParents,
+    getParentsAtPos,
+    getText,
     getXPointer
   }
 

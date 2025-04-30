@@ -1,17 +1,17 @@
-import { StandoffTable } from './core/standoff-table';
+import { createStandoffTable } from './standoff';
 import { standoff2xml, xml2standoff } from './conversion';
 
-const parseTEI = (element: Element) => {
+const parseXML = (element: Element) => {
   const standoff = xml2standoff(element);
-  return StandoffTable(standoff);
+  return createStandoffTable(standoff);
 }
 
-const serializeStandoff = (table: ReturnType<typeof StandoffTable>) => {
+const serializeStandoff = (table: ReturnType<typeof createStandoffTable>) => {
   const [el, _] = standoff2xml(table.rows);
   return el;
 }
 
 export default { 
-  parseTEI, 
+  parseXML, 
   serializeStandoff 
 };
