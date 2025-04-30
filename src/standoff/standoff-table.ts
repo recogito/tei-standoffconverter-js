@@ -1,3 +1,4 @@
+import { doc } from '../dom';
 import { standoff2xml } from '../conversion';
 import type { StandoffTableRow } from '../types';
 import { createModifyOperations, createQueryOperations } from './operations';
@@ -9,7 +10,7 @@ export const createStandoffTable = (rows: StandoffTableRow[], namespace = 'http:
   const modify = createModifyOperations(rows);
 
   const _createElement = (tag: string, attrib?: Record<string, string>): Element => {
-    const el = document.createElementNS(namespace, tag);
+    const el = doc.createElementNS(namespace, tag);
     
     if (attrib) {
       Object.entries(attrib).forEach(([key, value]) => {
@@ -30,7 +31,7 @@ export const createStandoffTable = (rows: StandoffTableRow[], namespace = 'http:
     // Copy tail text if needed
     if (oldEl.nextSibling && oldEl.nextSibling.nodeType === Node.TEXT_NODE) {
       if (oldEl.nextSibling.textContent) {
-        const nextSibling = document.createTextNode(oldEl.nextSibling.textContent);
+        const nextSibling = doc.createTextNode(oldEl.nextSibling.textContent);
 
         if (oldEl.nextSibling.nextSibling)
           secondParent.insertBefore(nextSibling, oldEl.nextSibling.nextSibling);
@@ -122,6 +123,7 @@ export const createStandoffTable = (rows: StandoffTableRow[], namespace = 'http:
   return {
     rows: rows,
     addInline,
+    getText: query.getText,
     getXPointer: query.getXPointer
   }
 

@@ -1,2 +1,2 @@
-export * from './modify-records';
-export * from './query-records';
+export * from './modify-rows';
+export * from './query-rows';

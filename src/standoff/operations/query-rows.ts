@@ -113,7 +113,10 @@ export const createQueryOperations = (rows: StandoffTableRow[]) => {
     const rowsBefore = rows.filter(row => row.position <= charOffset);
 
     const parents = getParentsAtPos(charOffset);
-    const tags = parents.map(el => (el as HTMLElement).dataset.origname);
+    const tags = parents.map((el: HTMLElement) => {
+      // CETEIcean stores the original name in .origname
+      return el.dataset.origname || el.tagName;
+    });
     
     const offset = charOffset - rowsBefore[rowsBefore.length - 1].position;
 
