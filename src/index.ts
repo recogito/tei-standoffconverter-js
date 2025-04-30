@@ -1,8 +1,8 @@
 import { createStandoffTable } from './standoff';
 import { standoff2xml, xml2standoff } from './conversion';
 
-const parseXML = (element: Element) => {
-  const standoff = xml2standoff(element);
+const parseXML = (arg: Element | string) => {
+  const standoff = xml2standoff(arg);
   return createStandoffTable(standoff);
 }
 

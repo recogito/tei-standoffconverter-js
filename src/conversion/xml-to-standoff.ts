@@ -1,4 +1,4 @@
-import { Constants } from '../dom';
+import { parseXML, Constants } from '../dom';
 import type { StandoffTableRowType, StandoffTableRow } from '../types';
 
 interface FlatRecord {
@@ -18,7 +18,6 @@ interface FlatRecord {
  * recursively, records tag start/text/end.
  */
 const flattenTree = (el: Element): FlatRecord[] => {
-
   const result: FlatRecord[] = [];
   
   const processNode = (node: Node, depth: number = 0): void => {
@@ -56,7 +55,9 @@ const flattenTree = (el: Element): FlatRecord[] => {
   return result;
 }
 
-export const xml2standoff = (el: Element): StandoffTableRow[] => {
+export const xml2standoff = (arg: Element | string): StandoffTableRow[] => {
+  const el = typeof arg === 'string' ? parseXML(arg) : arg;
+
   // Flatten the tree
   const flattened = flattenTree(el);
 

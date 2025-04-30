@@ -26,7 +26,7 @@ window.onload = async function () {
     const el = document.getElementById('orig').firstChild;
 
     // Parse CETEIcean content into a standoff representation
-    const standoff = Converter.parseXML(el);
+    const standoff = parseXML(el);
     console.log(standoff.rows);
 
     // Get XPointer expressions for character offsets
@@ -37,10 +37,37 @@ window.onload = async function () {
     // Add inline tags at character positions
     standoff.addInline(190, 252, 'tei-span', { role: 'highlighting' });
 
-    const serialized = Converter.serializeStandoff(standoff);
+    const serialized = serializeStandoff(standoff);
     document.getElementById('serialized').appendChild(serialized);
   });
 };
+```
+
+## Usage in Node
+
+This library works in Node (using [JSDOM](https://github.com/jsdom/jsdom) internally).
+
+```ts
+import { parseTEI, serializeStandoff } from '@recogito/standoff-converter';
+
+const xml = `
+  <TEI xmlns="http://www.tei-c.org/ns/1.0">
+    <teiHeader>
+      <fileDesc>
+        <titleStmt>
+          <title>Sample TEI Document</title>
+        </titleStmt>
+      </fileDesc>
+    </teiHeader>
+    <text>
+      <body>
+        <p>This is a <hi rend="italic">sample</hi> paragraph with <term>markup</term>.</p>
+      </body>
+    </text>
+  </TEI>
+`;
+
+const standoff = parseXML(xml);
 ```
 
 ## TODO

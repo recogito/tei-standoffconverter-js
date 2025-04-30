@@ -161,5 +161,29 @@ describe('xml2standoff', () => {
     expect(textNodes).toContain('markup');
     expect(textNodes).toContain('.');
   });
+
+  it('should parse XML from a string', () => {
+    const xml = `
+      <TEI xmlns="http://www.tei-c.org/ns/1.0">
+        <teiHeader>
+          <fileDesc>
+            <titleStmt>
+              <title>Sample TEI Document</title>
+            </titleStmt>
+          </fileDesc>
+        </teiHeader>
+        <text>
+          <body>
+            <p>This is a <hi rend="italic">sample</hi> paragraph with <term>markup</term>.</p>
+          </body>
+        </text>
+      </TEI>
+    `;
+
+    const result = xml2standoff(xml);
+
+    // Keep in mind this will retain whitespace as text nodes!
+    expect(result.length).toBe(39);
+  });
  
 });
