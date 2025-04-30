@@ -131,6 +131,7 @@ export const createStandoffTable = (rows: StandoffTableRow[], namespace = 'http:
     rows: rows,
     addInline,
     getXPointer: query.getXPointer,
+    json: query.getJSON,
     text: query.getText,
     xml,
     xmlString

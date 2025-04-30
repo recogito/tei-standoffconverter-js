@@ -77,6 +77,9 @@ const el = standoff.xml();
 
 // Export XML, serialized to string
 const xml = standoff.xmlString();
+
+// Export file in JSON standoff representation
+const json = standoff.json();
 ```
 
 ## TODO
