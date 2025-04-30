@@ -84,7 +84,6 @@ const json = standoff.json();
 
 ## TODO
 
-- **Add functionality for exporting/importing standoff information from JSON**. Currently, the standoff table maintains references to `Element` objects, which wouldn't be serializable.
 - **Handle existing standoff elements**. Currently, this library parses the markup only, but ignores `<standOff>` blocks in the TEI. Therefore, annotation offsets in existing standOff elements will break if the TEI is modified. We would need to parse the standOff elements, too, and incorprate them into the standoff map, in order to keep standoff pointers in sync with the TEI document.
 
 
