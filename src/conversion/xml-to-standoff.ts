@@ -1,4 +1,5 @@
-import type { StandoffTableRowType, StandoffTableRow } from "../types";
+import { Constants } from '../constants';
+import type { StandoffTableRowType, StandoffTableRow } from '../types';
 
 interface FlatRecord {
 
@@ -21,7 +22,7 @@ const flattenTree = (el: Element): FlatRecord[] => {
   const result: FlatRecord[] = [];
   
   const processNode = (node: Node, depth: number = 0): void => {
-    if (node.nodeType === Node.ELEMENT_NODE) {
+    if (node.nodeType === Constants.ELEMENT_NODE) {
       result.push({
         type: 'open',
         el: node as Element,
@@ -40,7 +41,7 @@ const flattenTree = (el: Element): FlatRecord[] => {
         depth,
         text: null
       });
-    } else if (node.nodeType === Node.TEXT_NODE) {
+    } else if (node.nodeType === Constants.TEXT_NODE) {
       result.push({
         type: 'text',
         el: null,
