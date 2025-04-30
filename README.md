@@ -4,6 +4,10 @@ Converts between TEI/XML, and a plaintext and standoff markup representation. Th
 TypeScript from the excellent Python [standoffconverter](https://github.com/standoff-nlp/standoffconverter) 
 by [@millawell](https://github.com/millawell).
 
+```sh
+npm install @recogito/standoff-converter
+```
+
 ## Features
 
 - Convert TEI/XML to plaintext, while retaining a mapping between text character offsets and TEI/XML markup position.
