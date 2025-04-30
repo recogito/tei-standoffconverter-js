@@ -68,41 +68,56 @@ export const createStandoffTable = (rows: StandoffTableRow[], namespace = 'http:
     begin: number,
     end: number,
     tag: string,
-    depth?: number,
     attrib: Record<string, string> = {}
   ) => {
-    // Create new element
-    const newEl = _createElement(tag, attrib);
-    
-    // Get parent context
-    const parents = query.getParents(begin, end, depth);
-    const parent = parents[parents.length - 1];
+    // Existing tag boundaries between begin and end
+    const boundaries = query.getBoundaries(begin, end);
 
-    // Handle depth
-    const newDepth = depth ?? parents.length;
+    const addSegment = (b: number, e: number, d?: number): Element => {
+      // Get parent context
+      const parents = query.getParents(b, e, d);
+      const newDepth = d ?? parents.length;
+  
+      // Update child depths
+      const children = query.getChildren(b, e, newDepth);
+      for (const child of children) {
+        const childRow = rows.find(row => row.el === child);
+        if (childRow)
+          modify.updateRow(child, { depth: childRow.depth + 1 });
+      }
 
-    // Update child depths
-    const children = query.getChildren(begin, end, newDepth);
-    for (const child of children) {
-      const childRow = rows.find(row => row.el === child);
-      if (childRow)
-        modify.updateRow(child, { depth: childRow.depth + 1 });
+      // Create new element
+      const newEl = _createElement(tag, attrib);
+  
+      // Insert the new element
+      if (b === e) {
+        modify.insertEmpty(b, newEl, newDepth);
+      } else {
+        modify.insertOpen(b, newEl, newDepth);
+        modify.insertClose(e, newEl, newDepth);
+      }
+
+      return parents[parents.length - 1];
     }
 
-    // Insert the new element
-    if (begin === end) {
-      modify.insertEmpty(begin, newEl, newDepth);
+    if (boundaries.length <= 2) { // Just the begin and end positions
+      const parent = addSegment(begin, end);
+      _recreateSubtree(parent);
     } else {
-      modify.insertOpen(begin, newEl, newDepth);
-      modify.insertClose(end, newEl, newDepth);
+      // Create segments based on boundaries
+      const segments: { start: number; end: number }[] = [];
+
+      for (let i = 0; i < boundaries.length - 1; i++) {
+        segments.push({ start: boundaries[i], end: boundaries[i + 1] });
+      }
+
+      const parents = segments.map(s => addSegment(s.start, s.end));
+      
+      // Root parents
+      const rootParents = parents.filter(el => !parents.some(other => other !== el && other.contains(el)));
+      [...rootParents].forEach(p => _recreateSubtree(p));
     }
-
-    console.log(rows);
-
-    // Recreate the affected subtree
-    _recreateSubtree(parent);
   }
-
 
   return {
     rows: rows,

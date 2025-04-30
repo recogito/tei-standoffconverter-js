@@ -63,21 +63,6 @@ export const createModifyOperations = (rows: StandoffTableRow[]) => {
     // 3. Default insertion point: after all same-position rows
     const insertIndex = rows.indexOf(samePositionRows[samePositionRows.length - 1]);
 
-    // 4. Depth-adjusted insert index
-    let adjustedIndex = insertIndex;
-    
-    if (row_type === 'open') {
-      // Insert after all rows with depth < new_depth at this position
-      const firstDeeperRow = samePositionRows.find(row => row.depth >= depth);
-      if (firstDeeperRow)
-        adjustedIndex = rows.indexOf(firstDeeperRow);
-    } else if (row_type === 'close' || row_type === 'empty') {
-      // Insert before all rows with depth > new_depth at this position
-      const firstShallowerRow = samePositionRows.find(row => row.depth <= depth);
-      if (firstShallowerRow) 
-        adjustedIndex = rows.indexOf(firstShallowerRow);
-    }
-    
     const newRow: StandoffTableRow = {
       position,
       row_type,
@@ -86,7 +71,7 @@ export const createModifyOperations = (rows: StandoffTableRow[]) => {
       text: null
     };
     
-    rows.splice(adjustedIndex, 0, newRow);
+    rows.splice(insertIndex, 0, newRow);
   }
 
   const insertOpen = (position: number, el: Element, depth: number) =>
@@ -121,7 +106,7 @@ export const createModifyOperations = (rows: StandoffTableRow[]) => {
       }
     }
   }
-  
+
   return {
     insertClose,
     insertEmpty,

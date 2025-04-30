@@ -28,6 +28,23 @@ export const createQueryOperations = (rows: StandoffTableRow[]) => {
     return stack;
   }
 
+  const getBoundaries = (begin: number, end: number): number[] => {
+    // Always nclude begin and end positions
+    const boundaries = new Set<number>([begin, end]);
+    
+    // Find all tag boundaries between begin and end
+    rows.forEach(row => {
+      // Only consider open and close tags
+      if ((row.row_type === 'open' || row.row_type === 'close') && 
+          row.position > begin && 
+          row.position < end) {
+        boundaries.add(row.position);
+      }
+    });
+    
+    return Array.from(boundaries).sort((a, b) => a - b);
+  }
+
   const getParents = (begin: number, end: number, depth: number | null = null): Element[] => {
     const beginCtx = getParentsAtPos(begin);
     const beginParents = depth !== null ? beginCtx.slice(0, depth) : beginCtx;
@@ -104,6 +121,7 @@ export const createQueryOperations = (rows: StandoffTableRow[]) => {
   }
 
   return {
+    getBoundaries,
     getChildren,
     getParents,
     getParentsAtPos,
