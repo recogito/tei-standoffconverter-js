@@ -20,7 +20,7 @@ npm install @recogito/standoff-converter
 You can use this library in the browser in combination with [CETEIcean](https://github.com/TEIC/CETEIcean).
 
 ```ts
-import { parseTEI, serializeStandoff } from '@recogito/standoff-converter';
+import { parseXML } from '@recogito/standoff-converter';
 
 window.onload = async function () {
   var CETEIcean = new CETEI();
@@ -52,7 +52,7 @@ window.onload = async function () {
 This library works in Node (using [JSDOM](https://github.com/jsdom/jsdom) internally).
 
 ```ts
-import { parseTEI, serializeStandoff } from '@recogito/standoff-converter';
+import { parseXML } from '@recogito/standoff-converter';
 
 const xml = `
   <TEI xmlns="http://www.tei-c.org/ns/1.0">
@@ -87,6 +87,8 @@ const json = standoff.json();
 ```
 
 ## TODO
+
+- **Utility function to remove whitespace**. Some NER packages may collapse whitespace/newlines from text. This would lead to inconsistent character offsets between plaintext extracted via `.text()` and the NER tokens.
 
 - **Handle existing standoff elements**. Currently, this library parses the markup only, but ignores `<standOff>` blocks in the TEI. Therefore, annotation offsets in existing standOff elements will break if the TEI is modified. We would need to parse the standOff elements, too, and incorprate them into the standoff map, in order to keep standoff pointers in sync with the TEI document.
 
