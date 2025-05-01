@@ -13,16 +13,12 @@ export default defineConfig({
     open: '/test/index.html'
   },
   build: {
+    ssr: true,
     sourcemap: true,
     lib: {
       entry: './src/index.ts',
       name: 'StandoffConverter',
-      formats: ['es', 'umd'],
-      fileName: (format) => {
-        return format === 'es' 
-          ? 'standoff-converter.mjs' 
-          : `standoff-converter.${format}.cjs`;
-      },
+      formats: ['es', 'umd']
     }
   }
 });

@@ -1,3 +1,5 @@
+import { JSDOM } from 'jsdom';
+
 let doc: Document;
 
 let Constants: { ELEMENT_NODE: number; TEXT_NODE: number };
@@ -26,8 +28,6 @@ if (typeof document !== 'undefined') {
   }
 } else {
   // NodeJS
-  const { JSDOM } = require('jsdom');
-
   const jsdom = new JSDOM('<!DOCTYPE html><html></html>', {
     contentType: 'text/xml',
   });
