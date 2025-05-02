@@ -1,10 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { JSDOM } from 'jsdom';
+import { parseHTML } from 'linkedom';
 import { createStandoffTable } from '../../src/standoff/standoff-table';
 import type { StandoffTableRow } from '../../src/types';
 
 describe('StandoffTable', () => {
-  const createDocument = () => (new JSDOM('<!DOCTYPE html><body></body>')).window.document;
+  const createDocument = () => parseHTML('<!DOCTYPE html><body></body>').window.document;
 
   it('should correctly add inline elements', () => {
     const doc = createDocument();
@@ -23,9 +23,9 @@ describe('StandoffTable', () => {
 
     expect(table.rows.length).toBe(6);
 
-    const newRow = table.rows.find((row) => row.row_type === 'open' && row.el?.tagName === 'child');
+    const newRow = table.rows.find((row) => row.row_type === 'open' && (row.el as Element)?.tagName === 'CHILD');
     expect(newRow).toBeTruthy();
-    expect(newRow?.el?.getAttribute('role')).toBe('testing');
+    expect((newRow?.el as Element)?.getAttribute('role')).toBe('testing');
   });
 
   it('should serialize to text correctly', () => {

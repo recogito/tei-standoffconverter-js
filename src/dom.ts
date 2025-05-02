@@ -1,4 +1,4 @@
-import { JSDOM } from 'jsdom';
+import { parseHTML } from 'linkedom';
 
 let doc: Document;
 
@@ -28,24 +28,21 @@ if (typeof document !== 'undefined') {
   }
 } else {
   // NodeJS
-  const jsdom = new JSDOM('<!DOCTYPE html><html></html>', {
-    contentType: 'text/xml',
-  });
-
-  doc = jsdom.window.document;
+  const dom = parseHTML('<!DOCTYPE html><html></html>');
+  doc = dom.window.document;
 
   Constants = {
-    ELEMENT_NODE: jsdom.window.Node.ELEMENT_NODE,
-    TEXT_NODE: jsdom.window.Node.TEXT_NODE,
+    ELEMENT_NODE: dom.window.Node.ELEMENT_NODE,
+    TEXT_NODE: dom.window.Node.TEXT_NODE,
   };
 
   parseXML = (xml: string) => {
-    const dom = new JSDOM(xml, { contentType: 'text/xml' });
+    const dom = parseHTML(xml);
     return dom.window.document.documentElement;
   }
 
   serializeXML = (element: Element, options?: { pretty?: boolean, declaration?: boolean }) => {
-    const serializer = new jsdom.window.XMLSerializer();
+    const serializer = new dom.window.XMLSerializer();
     return serializer.serializeToString(element);
   }
 }

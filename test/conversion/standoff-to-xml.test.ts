@@ -1,10 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { JSDOM } from 'jsdom';
+import { parseHTML } from 'linkedom';
 import { standoff2xml } from '../../src/conversion/standoff-to-xml';
 import type { StandoffTableRow } from '../../src/types';
 
 describe('standoff2xml', () => {
-  const createDocument = () => (new JSDOM('<!DOCTYPE html><body></body>')).window.document;
+  const createDocument = () => parseHTML('<!DOCTYPE html><body></body>').window.document;
 
   it('should build a simple XML element', () => {
     const doc = createDocument();
@@ -19,7 +19,7 @@ describe('standoff2xml', () => {
 
     const [result] = standoff2xml(rows);
 
-    expect(result?.tagName).toBe('root');
+    expect(result?.tagName).toBe('ROOT');
     expect(result?.textContent).toBe('Hello, world!');
   });
 
@@ -39,8 +39,8 @@ describe('standoff2xml', () => {
 
     const [result] = standoff2xml(rows);
 
-    expect(result?.tagName).toBe('root');
-    expect(result?.firstElementChild?.tagName).toBe('child');
+    expect(result?.tagName).toBe('ROOT');
+    expect(result?.firstElementChild?.tagName).toBe('CHILD');
     expect(result?.firstElementChild?.textContent).toBe('Text');
   });
 
@@ -77,8 +77,8 @@ describe('standoff2xml', () => {
 
     const [result] = standoff2xml(rows);
 
-    expect(result?.tagName).toBe('root');
-    expect(result?.children[0]?.tagName).toBe('empty');
+    expect(result?.tagName).toBe('ROOT');
+    expect(result?.children[0]?.tagName).toBe('EMPTY');
     expect(result?.children).toHaveLength(1);
   });
 
@@ -105,11 +105,11 @@ describe('standoff2xml', () => {
 
     const [result] = standoff2xml(rows);
 
-    expect(result?.tagName).toBe('root');
+    expect(result?.tagName).toBe('ROOT');
     expect(result?.childNodes.length).toBe(3);
     expect(result?.childNodes[0].nodeType).toBe(3);
     expect(result?.childNodes[0].textContent).toBe('This is a ');
-    expect((result?.childNodes[1] as Element).tagName).toBe('hi');
+    expect((result?.childNodes[1] as Element).tagName).toBe('HI');
     expect((result?.childNodes[1] as Element).getAttribute('rend')).toBe('italic');
     expect((result?.childNodes[1] as Element).textContent).toBe('sample');
     expect(result?.childNodes[2].textContent).toBe(' text.');
