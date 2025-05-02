@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { parseHTML } from 'linkedom';
-import { standoff2xml } from '../../src/conversion/standoff-to-xml';
-import type { StandoffTableRow } from '../../src/types';
+import { linearized2xml } from '../../src/conversion';
+import type { MarkupToken } from '../../src/types';
 
 describe('standoff2xml', () => {
   const createDocument = () => parseHTML('<!DOCTYPE html><body></body>').window.document;
@@ -10,13 +10,13 @@ describe('standoff2xml', () => {
     const doc = createDocument();
     const rootEl = doc.createElement('root');
 
-    const rows: StandoffTableRow[] = [
+    const rows: MarkupToken[] = [
       { row_type: 'open', el: rootEl, position: 0, depth: 0 },
       { row_type: 'text', el: null, text: 'Hello, world!', position: 0, depth: 0 },
       { row_type: 'close', el: rootEl, position: 13, depth: 0 }
     ];
 
-    const [result] = standoff2xml(rows);
+    const [result] = linearized2xml(rows);
 
     expect(result?.tagName).toBe('ROOT');
     expect(result?.textContent).toBe('Hello, world!');
@@ -27,7 +27,7 @@ describe('standoff2xml', () => {
     const root = doc.createElement('root');
     const child = doc.createElement('child');
 
-    const rows: StandoffTableRow[] = [
+    const rows: MarkupToken[] = [
       { row_type: 'open', el: root, position: 0, depth: 0 },
       { row_type: 'open', el: child, position: 0, depth: 1 },
       { row_type: 'text', el: null, text: 'Text', position: 0, depth: 1 },
@@ -35,7 +35,7 @@ describe('standoff2xml', () => {
       { row_type: 'close', el: root, position: 4, depth: 0 }
     ];
 
-    const [result] = standoff2xml(rows);
+    const [result] = linearized2xml(rows);
 
     expect(result?.tagName).toBe('ROOT');
     expect(result?.firstElementChild?.tagName).toBe('CHILD');
@@ -48,13 +48,13 @@ describe('standoff2xml', () => {
     el.setAttribute('id', 'test');
     el.setAttribute('data-value', '42');
 
-    const rows: StandoffTableRow[] = [
+    const rows: MarkupToken[] = [
       { row_type: 'open', el, position: 0, depth: 0 },
       { row_type: 'text', el: null, text: 'Content', position: 0, depth: 0 },
       { row_type: 'close', el, position: 7, depth: 0 }
     ];
 
-    const [result] = standoff2xml(rows);
+    const [result] = linearized2xml(rows);
 
     expect(result?.getAttribute('id')).toBe('test');
     expect(result?.getAttribute('data-value')).toBe('42');
@@ -66,13 +66,13 @@ describe('standoff2xml', () => {
     const parent = doc.createElement('root');
     const el = doc.createElement('empty');
 
-    const rows: StandoffTableRow[] = [
+    const rows: MarkupToken[] = [
       { row_type: 'open', el: parent, position: 0, depth: 0 },
       { row_type: 'empty', el, position: 0, depth: 1 },
       { row_type: 'close', el: parent, position: 0, depth: 1 }
     ];
 
-    const [result] = standoff2xml(rows);
+    const [result] = linearized2xml(rows);
 
     expect(result?.tagName).toBe('ROOT');
     expect(result?.children[0]?.tagName).toBe('EMPTY');
@@ -86,7 +86,7 @@ describe('standoff2xml', () => {
     const hi = doc.createElement('hi');
     hi.setAttribute('rend', 'italic');
 
-    const rows: StandoffTableRow[] = [
+    const rows: MarkupToken[] = [
       { row_type: 'open', el: root, position: 0, depth: 0 },
       { row_type: 'text', el: null, text: 'This is a ', position: 0, depth: 0},
       { row_type: 'open', el: hi, position: 9, depth: 1 },
@@ -96,7 +96,7 @@ describe('standoff2xml', () => {
       { row_type: 'close', el: root, position: 21, depth: 0 }
     ];
 
-    const [result] = standoff2xml(rows);
+    const [result] = linearized2xml(rows);
 
     expect(result?.tagName).toBe('ROOT');
     expect(result?.childNodes.length).toBe(3);

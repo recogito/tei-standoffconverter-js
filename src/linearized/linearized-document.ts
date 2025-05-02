@@ -1,9 +1,9 @@
 import { doc, serializeXML } from '../dom';
-import { standoff2xml } from '../conversion';
-import type { StandoffTableRow } from '../types';
+import { linearized2xml } from '../conversion';
+import type { MarkupToken } from '../types';
 import { createModifyOperations, createQueryOperations } from './operations';
 
-export const createStandoffTable = (rows: StandoffTableRow[], namespace = 'http://www.tei-c.org/ns/1.0') => {
+export const createLinearizedTable = (rows: MarkupToken[], namespace = 'http://www.tei-c.org/ns/1.0') => {
 
   const query = createQueryOperations(rows);
 
@@ -55,11 +55,11 @@ export const createStandoffTable = (rows: StandoffTableRow[], namespace = 'http:
     const toUpdate = rows.slice(firstIndex, lastIndex + 1);
 
     // Recreate the subtree
-    const [newParentEl, oldElsToNewEls] = standoff2xml(toUpdate);
+    const [newParentEl, oldElsToNewEls] = linearized2xml(toUpdate);
 
     // Update the table with new elements
     for (const [oldEl, newEl] of Object.entries(oldElsToNewEls)) {
-      modify.updateRow(oldEl as unknown as Element, { el: newEl });
+      modify.updateToken(oldEl as unknown as Element, { el: newEl });
     }
 
     _replaceElement(parent, newParentEl);
@@ -84,7 +84,7 @@ export const createStandoffTable = (rows: StandoffTableRow[], namespace = 'http:
       for (const child of children) {
         const childRow = rows.find(row => row.el === child);
         if (childRow)
-          modify.updateRow(child, { depth: childRow.depth + 1 });
+          modify.updateToken(child, { depth: childRow.depth + 1 });
       }
 
       // Create new element
@@ -121,7 +121,7 @@ export const createStandoffTable = (rows: StandoffTableRow[], namespace = 'http:
   }
 
   const xml = () => {
-    const [el, _] = standoff2xml(rows);
+    const [el, _] = linearized2xml(rows);
     return el;
   }
 
@@ -131,8 +131,8 @@ export const createStandoffTable = (rows: StandoffTableRow[], namespace = 'http:
     rows: rows,
     addInline,
     getXPointer: query.getXPointer,
-    json: query.getJSON,
-    text: query.getText,
+    json: query.toJSON,
+    text: query.toText,
     xml,
     xmlString
   }

@@ -1,8 +1,8 @@
-export interface StandoffTableRow {
+export interface MarkupToken {
 
   position: number;
 
-  row_type: StandoffTableRowType;
+  row_type: MarkupTokenType;
 
   el: Element |null;
 
@@ -10,6 +10,12 @@ export interface StandoffTableRow {
 
   text?: string | null;
 
+  serializeAs?: SerializationMode;
+
+  standOffId?: string;
+
 }
 
-export type StandoffTableRowType = 'open' | 'close' | 'text' | 'empty';
+export type MarkupTokenType = 'open' | 'close' | 'text' | 'empty';
+
+export type SerializationMode = 'inline' | 'standoff';

@@ -58,17 +58,17 @@
           document.getElementById('orig').appendChild(data);
           const el = document.getElementById('orig').firstChild;
 
-          const standoff = parseXML(el);
+          const parsed = parseXML(el);
 
           // Get XPointer expression for 'first Book'
-          const start = standoff.getXPointer(190);
-          const end = standoff.getXPointer(200);
+          const start = parsed.getXPointer(190);
+          const end = parsed.getXPointer(200);
           console.log({ start, end });
 
           // Highlight 'first Book'
-          standoff.addInline(190, 252, 'tei-span', { role: 'highlighting' });
+          parsed.addInline(190, 252, 'tei-span', { role: 'highlighting' });
 
-          const serialized = standoff.xml();
+          const serialized = parsed.xml();
           document.getElementById('serialized').appendChild(serialized);
         });
       };

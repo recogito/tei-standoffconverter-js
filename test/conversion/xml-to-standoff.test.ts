@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { parseHTML } from 'linkedom';
-import { xml2standoff } from '../../src/conversion/xml-to-standoff';
+import { xml2linearized } from '../../src/conversion';
 
 describe('xml2standoff', () => {
 
@@ -12,7 +12,7 @@ describe('xml2standoff', () => {
   it('should handle a simple XML element', () => {
     const xml = '<root>Hello, world!</root>';
     const element = createElementFromXML(xml);
-    const result = xml2standoff(element);
+    const result = xml2linearized(element);
 
     expect(result).toHaveLength(3);
     expect(result[0].row_type).toBe('open');
@@ -27,7 +27,7 @@ describe('xml2standoff', () => {
   it('should handle nested elements', () => {
     const xml = '<root><child>Text</child></root>';
     const element = createElementFromXML(xml);
-    const result = xml2standoff(element);
+    const result = xml2linearized(element);
 
     expect(result).toHaveLength(5);
     expect(result[0].row_type).toBe('open');
@@ -50,7 +50,7 @@ describe('xml2standoff', () => {
   it('should handle elements with attributes', () => {
     const xml = '<root id="main"><child type="item">Content</child></root>';
     const element = createElementFromXML(xml);
-    const result = xml2standoff(element);
+    const result = xml2linearized(element);
 
     expect(result).toHaveLength(5);
     
@@ -76,7 +76,7 @@ describe('xml2standoff', () => {
   it('should handle multiple text nodes and elements', () => {
     const xml = '<root>Before<middle>Inside</middle>After</root>';
     const element = createElementFromXML(xml);
-    const result = xml2standoff(element);
+    const result = xml2linearized(element);
 
     expect(result).toHaveLength(7);
     
@@ -108,7 +108,7 @@ describe('xml2standoff', () => {
   it('should handle empty elements', () => {
     const xml = '<root><empty></empty></root>';
     const element = createElementFromXML(xml);
-    const result = xml2standoff(element);
+    const result = xml2linearized(element);
 
     expect(result).toHaveLength(4);
     expect(result[0].row_type).toBe('open');
@@ -137,7 +137,7 @@ describe('xml2standoff', () => {
     `;
     
     const element = createElementFromXML(xml);
-    const result = xml2standoff(element);
+    const result = xml2linearized(element);
     
     // Check that all elements are captured
     const openElements = result.filter(r => r.row_type === 'open').map(r => (r.el as Element)?.tagName);
@@ -180,7 +180,7 @@ describe('xml2standoff', () => {
       </TEI>
     `;
 
-    const result = xml2standoff(xml);
+    const result = xml2linearized(xml);
 
     // Keep in mind this will retain whitespace as text nodes!
     expect(result.length).toBe(39);

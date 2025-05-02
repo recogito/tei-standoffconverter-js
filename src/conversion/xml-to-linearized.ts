@@ -1,9 +1,9 @@
 import { parseXML, Constants } from '../dom';
-import type { StandoffTableRowType, StandoffTableRow } from '../types';
+import type { MarkupToken, MarkupTokenType } from '../types';
 
 interface FlatRecord {
 
-  type: StandoffTableRowType;
+  type: MarkupTokenType;
   
   el: Element;
 
@@ -55,13 +55,13 @@ const flattenTree = (el: Element): FlatRecord[] => {
   return result;
 }
 
-export const xml2standoff = (arg: Element | string): StandoffTableRow[] => {
+export const xml2linearized = (arg: Element | string): MarkupToken[] => {
   const el = typeof arg === 'string' ? parseXML(arg) : arg;
 
   // Flatten the tree
   const flattened = flattenTree(el);
 
-  const standoff: StandoffTableRow[] = []; 
+  const standoff: MarkupToken[] = []; 
 
   let position = 0;
   

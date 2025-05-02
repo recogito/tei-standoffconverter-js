@@ -1,8 +1,8 @@
-import type { StandoffTableRow, StandoffTableRowType } from '../../types';
+import type { MarkupToken, MarkupTokenType } from '../../types';
 
-export const createModifyOperations = (rows: StandoffTableRow[]) => {
+export const createModifyOperations = (rows: MarkupToken[]) => {
 
-  const updateRow = (el: Element, props: Partial<StandoffTableRow>) => {
+  const updateToken = (el: Element, props: Partial<MarkupToken>) => {
     rows.forEach((row, index) => {
       if (row.el === el)
         rows[index] = { ...row, ...props };
@@ -30,7 +30,7 @@ export const createModifyOperations = (rows: StandoffTableRow[]) => {
     const originalIndex = rows.indexOf(lastTextRow);
     if (originalIndex === -1) return;  // Should never happen
 
-    const newRowBefore: StandoffTableRow = {
+    const newTokenBefore: MarkupToken = {
       position: lastTextRow.position,
       row_type: 'text',
       el: null,
@@ -38,7 +38,7 @@ export const createModifyOperations = (rows: StandoffTableRow[]) => {
       text: textBefore
     };
     
-    const newRowAfter: StandoffTableRow = {
+    const newTokenAfter: MarkupToken = {
       position: position,
       row_type: 'text',
       el: null,
@@ -47,10 +47,10 @@ export const createModifyOperations = (rows: StandoffTableRow[]) => {
     };
     
     // Replace the original row with the two new ones
-    rows.splice(originalIndex, 1, newRowBefore, newRowAfter);
+    rows.splice(originalIndex, 1, newTokenBefore, newTokenAfter);
   }
 
-  const _insert = (row_type: StandoffTableRowType, position: number, el: Element, depth: number) => {
+  const _insert = (row_type: MarkupTokenType, position: number, el: Element, depth: number) => {
     // 1. Ensure position exists (may split text if needed)
     if (!rows.some(row => row.position === position)) 
       _splitStringAtPosition(position);
@@ -63,7 +63,7 @@ export const createModifyOperations = (rows: StandoffTableRow[]) => {
     // 3. Default insertion point: after all same-position rows
     const insertIndex = rows.indexOf(samePositionRows[samePositionRows.length - 1]);
 
-    const newRow: StandoffTableRow = {
+    const newRow: MarkupToken = {
       position,
       row_type,
       el,
@@ -83,7 +83,7 @@ export const createModifyOperations = (rows: StandoffTableRow[]) => {
   const insertEmpty = (position: number, el: Element, depth: number) =>
     _insert('empty', position, el, depth);
 
-  const removeRow = (el: Element) => {
+  const removeToken = (el: Element) => {
     const indicesToRemove: number[] = [];
     rows.forEach((row, index) => {
       if (row.el === el) indicesToRemove.push(index);
@@ -111,8 +111,8 @@ export const createModifyOperations = (rows: StandoffTableRow[]) => {
     insertClose,
     insertEmpty,
     insertOpen,
-    removeRow,
-    updateRow
+    removeToken,
+    updateToken
   }
 
 }

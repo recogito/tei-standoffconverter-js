@@ -1,13 +1,13 @@
-import type { StandoffTableRow } from '../../types';
+import type { MarkupToken } from '../../types';
 
-export const createQueryOperations = (rows: StandoffTableRow[]) => {
+export const createQueryOperations = (rows: MarkupToken[]) => {
 
-  const getText = () => rows
+  const toText = () => rows
     .filter(row => row.row_type === 'text' && row.text)
     .map(row => row.text || '')
     .join('');
 
-  const getJSON = () => rows
+  const toJSON = () => rows
     .map(row => ({
       position: row.position,
       type: row.row_type,
@@ -136,11 +136,11 @@ export const createQueryOperations = (rows: StandoffTableRow[]) => {
   return {
     getBoundaries,
     getChildren,
-    getJSON,
     getParents,
     getParentsAtPos,
-    getText,
-    getXPointer
+    getXPointer,
+    toJSON,
+    toText
   }
 
 }

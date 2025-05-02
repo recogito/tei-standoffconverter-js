@@ -1,7 +1,7 @@
-import { createStandoffTable } from './standoff';
-import { xml2standoff } from './conversion';
+import { createLinearizedTable } from './linearized';
+import { xml2linearized } from './conversion';
 
 export const parseXML = (arg: Element | string) => {
-  const standoff = xml2standoff(arg);
-  return createStandoffTable(standoff);
+  const linearized = xml2linearized(arg);
+  return createLinearizedTable(linearized);
 }

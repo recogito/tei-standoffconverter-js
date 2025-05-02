@@ -1,2 +1,2 @@
-export * from './standoff-to-xml';
-export * from './xml-to-standoff';
+export * from './linearized-to-xml';
+export * from './xml-to-linearized';

@@ -1,7 +1,7 @@
 import { doc } from '../dom';
-import type { StandoffTableRow } from '../types';
+import type { MarkupToken } from '../types';
 
-export const standoff2xml = (rows: StandoffTableRow[], namespace = 'http://www.tei-c.org/ns/1.0') => {
+export const linearized2xml = (rows: MarkupToken[], namespace = 'http://www.tei-c.org/ns/1.0') => {
   const oldEls2newEls = new Map<Element, Element>();
   
   let rootEl: Element | null = null;
