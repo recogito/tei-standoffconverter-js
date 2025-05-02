@@ -12,7 +12,7 @@
   ],
   "scripts": {
     "start": "vite",
-    "build": "tsup",
+    "build": "vite build",
     "test": "vitest"
   },
   "exports": {
@@ -29,9 +29,9 @@
   "devDependencies": {
     "@types/node": "^22.15.3",
     "CETEIcean": "^1.9.4",
-    "tsup": "^8.4.0",
     "typescript": "^5.8.3",
     "vite": "^6.3.4",
+    "vite-plugin-dts": "^4.5.3",
     "vitest": "^3.1.2"
   },
   "dependencies": {

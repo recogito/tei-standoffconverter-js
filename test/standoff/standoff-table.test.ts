@@ -9,11 +9,10 @@ describe('StandoffTable', () => {
   it('should correctly add inline elements', () => {
     const doc = createDocument();
     const root = doc.createElement('root');
-    const text = doc.createTextNode('Hello, world!');
 
     const rows: StandoffTableRow[] = [
       { row_type: 'open', position: 0, el: root, depth: 0 },
-      { row_type: 'text', position: 0, el: text, text: 'Hello, world!', depth: 0 },
+      { row_type: 'text', position: 0, el: null, text: 'Hello, world!', depth: 0 },
       { row_type: 'close', position: 13, el: root, depth: 0 }
     ];
 
@@ -31,11 +30,10 @@ describe('StandoffTable', () => {
   it('should serialize to text correctly', () => {
     const doc = createDocument();
     const root = doc.createElement('root');
-    const text = doc.createTextNode('Hello, world!');
 
     const rows: StandoffTableRow[] = [
       { row_type: 'open', position: 0, el: root, depth: 0 },
-      { row_type: 'text', position: 0, el: text, text: 'Hello, world!', depth: 0 },
+      { row_type: 'text', position: 0, el: null, text: 'Hello, world!', depth: 0 },
       { row_type: 'close', position: 13, el: root, depth: 0 }
     ];
 
@@ -51,17 +49,14 @@ describe('StandoffTable', () => {
     const doc = createDocument();
     const root = doc.createElement('root');
     const child = doc.createElement('child')
-    const text1 = doc.createTextNode('Hello, ');
-    const text2 = doc.createTextNode('world');
-    const text3 = doc.createTextNode('!');
 
     const rows: StandoffTableRow[] = [
       { row_type: 'open', position: 0, el: root, depth: 0 },
-      { row_type: 'text', position: 0, el: text1, text: 'Hello, ', depth: 0 },
+      { row_type: 'text', position: 0, el: null, text: 'Hello, ', depth: 0 },
       { row_type: 'open', position: 7, el: child, depth: 1 },
-      { row_type: 'text', position: 7, el: text2, text: 'world', depth: 1 },
+      { row_type: 'text', position: 7, el: null, text: 'world', depth: 1 },
       { row_type: 'close', position: 12, el: child, depth: 1 },
-      { row_type: 'text', position: 12, el: text3, text: '!', depth: 0 },
+      { row_type: 'text', position: 12, el: null, text: '!', depth: 0 },
       { row_type: 'close', position: 13, el: root, depth: 0 }
     ];
 

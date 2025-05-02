@@ -4,7 +4,7 @@ export interface StandoffTableRow {
 
   row_type: StandoffTableRowType;
 
-  el: Element | Text | null;
+  el: Element |null;
 
   depth: number | null;
 

@@ -9,11 +9,10 @@ describe('standoff2xml', () => {
   it('should build a simple XML element', () => {
     const doc = createDocument();
     const rootEl = doc.createElement('root');
-    const textEl = doc.createTextNode('Hello, World!');
 
     const rows: StandoffTableRow[] = [
       { row_type: 'open', el: rootEl, position: 0, depth: 0 },
-      { row_type: 'text', el: textEl, text: 'Hello, world!', position: 0, depth: 0 },
+      { row_type: 'text', el: null, text: 'Hello, world!', position: 0, depth: 0 },
       { row_type: 'close', el: rootEl, position: 13, depth: 0 }
     ];
 
@@ -27,12 +26,11 @@ describe('standoff2xml', () => {
     const doc = createDocument();
     const root = doc.createElement('root');
     const child = doc.createElement('child');
-    const text = doc.createTextNode('Text');
 
     const rows: StandoffTableRow[] = [
       { row_type: 'open', el: root, position: 0, depth: 0 },
       { row_type: 'open', el: child, position: 0, depth: 1 },
-      { row_type: 'text', el: text, text: 'Text', position: 0, depth: 1 },
+      { row_type: 'text', el: null, text: 'Text', position: 0, depth: 1 },
       { row_type: 'close', el: child, position: 4, depth: 1 },
       { row_type: 'close', el: root, position: 4, depth: 0 }
     ];
@@ -49,11 +47,10 @@ describe('standoff2xml', () => {
     const el = doc.createElement('tag');
     el.setAttribute('id', 'test');
     el.setAttribute('data-value', '42');
-    const text = doc.createTextNode('Content');
 
     const rows: StandoffTableRow[] = [
       { row_type: 'open', el, position: 0, depth: 0 },
-      { row_type: 'text', el: text, text: 'Content', position: 0, depth: 0 },
+      { row_type: 'text', el: null, text: 'Content', position: 0, depth: 0 },
       { row_type: 'close', el, position: 7, depth: 0 }
     ];
 
@@ -89,17 +86,13 @@ describe('standoff2xml', () => {
     const hi = doc.createElement('hi');
     hi.setAttribute('rend', 'italic');
 
-    const text1 = doc.createTextNode('This is a ');
-    const text2 = doc.createTextNode('sample');
-    const text3 = doc.createTextNode('text.');
-
     const rows: StandoffTableRow[] = [
       { row_type: 'open', el: root, position: 0, depth: 0 },
-      { row_type: 'text', el: text1, text: 'This is a ', position: 0, depth: 0},
+      { row_type: 'text', el: null, text: 'This is a ', position: 0, depth: 0},
       { row_type: 'open', el: hi, position: 9, depth: 1 },
-      { row_type: 'text', el: text2, text: 'sample', position: 9, depth: 1 },
+      { row_type: 'text', el: null, text: 'sample', position: 9, depth: 1 },
       { row_type: 'close', el: hi, position: 15, depth: 1 },
-      { row_type: 'text', el: text3, text: ' text.', position: 15, depth: 0 },
+      { row_type: 'text', el: null, text: ' text.', position: 15, depth: 0 },
       { row_type: 'close', el: root, position: 21, depth: 0 }
     ];
 
