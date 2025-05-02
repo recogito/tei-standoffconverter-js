@@ -24,25 +24,6 @@ export const createLinearizedTable = (el: Element, tokens: MarkupToken[], namesp
     return el;
   }
 
-  const _replaceElement = (oldEl: Element, newEl: Element) => {
-    const secondParent = oldEl.parentNode;
-    if (secondParent === null) return; // Should never happen
-
-    // Copy tail text if needed
-    if (oldEl.nextSibling && oldEl.nextSibling.nodeType === Node.TEXT_NODE) {
-      if (oldEl.nextSibling.textContent) {
-        const nextSibling = doc.createTextNode(oldEl.nextSibling.textContent);
-
-        if (oldEl.nextSibling.nextSibling)
-          secondParent.insertBefore(nextSibling, oldEl.nextSibling.nextSibling);
-        else
-          secondParent.appendChild(nextSibling);
-      }
-    }
-    
-    secondParent.replaceChild(newEl, oldEl);
-  }
-
   const removeInline = (
     el: Element,
     removeContents = true
