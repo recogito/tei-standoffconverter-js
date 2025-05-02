@@ -5,7 +5,8 @@ export default defineConfig({
   plugins: [
     dts({ 
       insertTypesEntry: true,
-      entryRoot: '.'
+      entryRoot: '.',
+      rollupTypes: true // Add this line
     })
   ],
   server: {
@@ -14,10 +15,19 @@ export default defineConfig({
   build: {
     ssr: true,
     sourcemap: true,
+    minify: true,
     lib: {
       name: 'StandoffConverter',
       entry: './src/index.ts',
       formats: ['es', 'umd']
+    },
+    rollupOptions: {
+      external: ['linkedom'],
+      output: {
+        globals: {
+          linkedom: 'linkedom'
+        }
+      }
     }
   }
 });
