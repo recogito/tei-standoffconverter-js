@@ -19,8 +19,12 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "require": "./dist/index.cjs",
+      "default": "./dist/index.js"
     }
+  },
+  "engines": {
+    "node": ">=16.14.0"
   },
   "devDependencies": {
     "@types/node": "^22.15.3",
