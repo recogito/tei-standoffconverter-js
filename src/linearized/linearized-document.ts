@@ -61,8 +61,21 @@ export const createLinearizedTable = (el: Element, tokens: MarkupToken[], namesp
       const closeIndex = tokens.indexOf(closeToken);
 
       if (removeContents) {
+        // Adjust position offsets after the clip!
+        let removedChars = 0;
+        for (let i = openIndex; i <= closeIndex; i++) {
+          const token = tokens[i];
+          if (token.type === 'text' && token.text)
+            removedChars += token.text.length;
+        }
+
         // Remove everything from open to close, inclusive
         tokens.splice(openIndex, closeIndex - openIndex + 1);
+
+        // Update positions after the splice
+        for (let i = openIndex; i < tokens.length; i++) {
+          tokens[i].position -= removedChars;
+        }
       } else {
         // Remove just the open and close tokens and keep the rest
         tokens.splice(closeIndex, 1);
