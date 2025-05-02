@@ -11,9 +11,9 @@ describe('standoff2xml', () => {
     const rootEl = doc.createElement('root');
 
     const rows: MarkupToken[] = [
-      { row_type: 'open', el: rootEl, position: 0, depth: 0 },
-      { row_type: 'text', el: null, text: 'Hello, world!', position: 0, depth: 0 },
-      { row_type: 'close', el: rootEl, position: 13, depth: 0 }
+      { type: 'open', el: rootEl, position: 0, depth: 0 },
+      { type: 'text', el: null, text: 'Hello, world!', position: 0, depth: 0 },
+      { type: 'close', el: rootEl, position: 13, depth: 0 }
     ];
 
     const [result] = linearized2xml(rows);
@@ -28,11 +28,11 @@ describe('standoff2xml', () => {
     const child = doc.createElement('child');
 
     const rows: MarkupToken[] = [
-      { row_type: 'open', el: root, position: 0, depth: 0 },
-      { row_type: 'open', el: child, position: 0, depth: 1 },
-      { row_type: 'text', el: null, text: 'Text', position: 0, depth: 1 },
-      { row_type: 'close', el: child, position: 4, depth: 1 },
-      { row_type: 'close', el: root, position: 4, depth: 0 }
+      { type: 'open', el: root, position: 0, depth: 0 },
+      { type: 'open', el: child, position: 0, depth: 1 },
+      { type: 'text', el: null, text: 'Text', position: 0, depth: 1 },
+      { type: 'close', el: child, position: 4, depth: 1 },
+      { type: 'close', el: root, position: 4, depth: 0 }
     ];
 
     const [result] = linearized2xml(rows);
@@ -49,9 +49,9 @@ describe('standoff2xml', () => {
     el.setAttribute('data-value', '42');
 
     const rows: MarkupToken[] = [
-      { row_type: 'open', el, position: 0, depth: 0 },
-      { row_type: 'text', el: null, text: 'Content', position: 0, depth: 0 },
-      { row_type: 'close', el, position: 7, depth: 0 }
+      { type: 'open', el, position: 0, depth: 0 },
+      { type: 'text', el: null, text: 'Content', position: 0, depth: 0 },
+      { type: 'close', el, position: 7, depth: 0 }
     ];
 
     const [result] = linearized2xml(rows);
@@ -67,9 +67,9 @@ describe('standoff2xml', () => {
     const el = doc.createElement('empty');
 
     const rows: MarkupToken[] = [
-      { row_type: 'open', el: parent, position: 0, depth: 0 },
-      { row_type: 'empty', el, position: 0, depth: 1 },
-      { row_type: 'close', el: parent, position: 0, depth: 1 }
+      { type: 'open', el: parent, position: 0, depth: 0 },
+      { type: 'empty', el, position: 0, depth: 1 },
+      { type: 'close', el: parent, position: 0, depth: 1 }
     ];
 
     const [result] = linearized2xml(rows);
@@ -87,13 +87,13 @@ describe('standoff2xml', () => {
     hi.setAttribute('rend', 'italic');
 
     const rows: MarkupToken[] = [
-      { row_type: 'open', el: root, position: 0, depth: 0 },
-      { row_type: 'text', el: null, text: 'This is a ', position: 0, depth: 0},
-      { row_type: 'open', el: hi, position: 9, depth: 1 },
-      { row_type: 'text', el: null, text: 'sample', position: 9, depth: 1 },
-      { row_type: 'close', el: hi, position: 15, depth: 1 },
-      { row_type: 'text', el: null, text: ' text.', position: 15, depth: 0 },
-      { row_type: 'close', el: root, position: 21, depth: 0 }
+      { type: 'open', el: root, position: 0, depth: 0 },
+      { type: 'text', el: null, text: 'This is a ', position: 0, depth: 0},
+      { type: 'open', el: hi, position: 9, depth: 1 },
+      { type: 'text', el: null, text: 'sample', position: 9, depth: 1 },
+      { type: 'close', el: hi, position: 15, depth: 1 },
+      { type: 'text', el: null, text: ' text.', position: 15, depth: 0 },
+      { type: 'close', el: root, position: 21, depth: 0 }
     ];
 
     const [result] = linearized2xml(rows);

@@ -2,7 +2,15 @@ import { parseHTML } from 'linkedom';
 
 let doc: Document;
 
-let Constants: { ELEMENT_NODE: number; TEXT_NODE: number };
+let Constants: { 
+
+  ELEMENT_NODE: number; 
+
+  TEXT_NODE: number;
+
+  NUMBER_TYPE: number;
+
+};
 
 let parseXML: (xml: string) => Element;
 let serializeXML: (element: Element) => string;
@@ -13,7 +21,8 @@ if (typeof document !== 'undefined') {
 
   Constants = {
     ELEMENT_NODE: Node.ELEMENT_NODE,
-    TEXT_NODE: Node.TEXT_NODE
+    TEXT_NODE: Node.TEXT_NODE,
+    NUMBER_TYPE: XPathResult.NUMBER_TYPE
   };
 
   parseXML = (xml: string) => {
@@ -34,6 +43,7 @@ if (typeof document !== 'undefined') {
   Constants = {
     ELEMENT_NODE: dom.window.Node.ELEMENT_NODE,
     TEXT_NODE: dom.window.Node.TEXT_NODE,
+    NUMBER_TYPE: 1
   };
 
   parseXML = (xml: string) => {

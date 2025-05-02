@@ -1,4 +1,4 @@
-import { Constants } from '../../dom';
+import { doc, Constants } from '../../dom';
 import type { MarkupToken } from '../../types';
 
 export const createQueryOperations = (rows: MarkupToken[]) => {
@@ -140,12 +140,12 @@ export const createQueryOperations = (rows: MarkupToken[]) => {
         segments = getXPointerRecursive(el.parentElement, segments);
       }
       
-      if (el.nodeType === Constants.ELEMENT_NODE && el.nodeName.toLowerCase().startsWith('tei-')) {      
+      if (el.nodeType === Constants.ELEMENT_NODE) {      
         if (el.hasAttribute('xml:id')) {
           predicate = `[@xml:id='${el.getAttribute('xml:id')}']`;
         } else {
           xpath = `count(preceding-sibling::${el.localName})`;
-          count = document.evaluate(xpath, el, null, XPathResult.NUMBER_TYPE, null).numberValue + 1;
+          count = doc.evaluate(xpath, el, null, Constants.NUMBER_TYPE, null).numberValue + 1;
       
           predicate = `[${count}]`;
         }

@@ -11,18 +11,18 @@ describe('StandoffTable', () => {
     const root = doc.createElement('root');
 
     const rows: MarkupToken[] = [
-      { row_type: 'open', position: 0, el: root, depth: 0 },
-      { row_type: 'text', position: 0, el: null, text: 'Hello, world!', depth: 0 },
-      { row_type: 'close', position: 13, el: root, depth: 0 }
+      { type: 'open', position: 0, el: root, depth: 0 },
+      { type: 'text', position: 0, el: null, text: 'Hello, world!', depth: 0 },
+      { type: 'close', position: 13, el: root, depth: 0 }
     ];
 
-    const table = createLinearizedTable(rows);
+    const table = createLinearizedTable(root, rows);
 
     table.addInline(0, 5, 'child', { 'role': 'testing' });
 
-    expect(table.rows.length).toBe(6);
+    expect(table.tokens.length).toBe(6);
 
-    const newRow = table.rows.find((row) => row.row_type === 'open' && (row.el as Element)?.tagName === 'CHILD');
+    const newRow = table.tokens.find(token => token.type === 'open' && (token.el as Element)?.tagName === 'CHILD');
     expect(newRow).toBeTruthy();
     expect((newRow?.el as Element)?.getAttribute('role')).toBe('testing');
   });
@@ -32,12 +32,12 @@ describe('StandoffTable', () => {
     const root = doc.createElement('root');
 
     const rows: MarkupToken[] = [
-      { row_type: 'open', position: 0, el: root, depth: 0 },
-      { row_type: 'text', position: 0, el: null, text: 'Hello, world!', depth: 0 },
-      { row_type: 'close', position: 13, el: root, depth: 0 }
+      { type: 'open', position: 0, el: root, depth: 0 },
+      { type: 'text', position: 0, el: null, text: 'Hello, world!', depth: 0 },
+      { type: 'close', position: 13, el: root, depth: 0 }
     ];
 
-    const table = createLinearizedTable(rows);
+    const table = createLinearizedTable(doc.documentElement, rows);
 
     table.addInline(0, 5, 'child', { 'role': 'testing' });
 
@@ -51,16 +51,16 @@ describe('StandoffTable', () => {
     const child = doc.createElement('child')
 
     const rows: MarkupToken[] = [
-      { row_type: 'open', position: 0, el: root, depth: 0 },
-      { row_type: 'text', position: 0, el: null, text: 'Hello, ', depth: 0 },
-      { row_type: 'open', position: 7, el: child, depth: 1 },
-      { row_type: 'text', position: 7, el: null, text: 'world', depth: 1 },
-      { row_type: 'close', position: 12, el: child, depth: 1 },
-      { row_type: 'text', position: 12, el: null, text: '!', depth: 0 },
-      { row_type: 'close', position: 13, el: root, depth: 0 }
+      { type: 'open', position: 0, el: root, depth: 0 },
+      { type: 'text', position: 0, el: null, text: 'Hello, ', depth: 0 },
+      { type: 'open', position: 7, el: child, depth: 1 },
+      { type: 'text', position: 7, el: null, text: 'world', depth: 1 },
+      { type: 'close', position: 12, el: child, depth: 1 },
+      { type: 'text', position: 12, el: null, text: '!', depth: 0 },
+      { type: 'close', position: 13, el: root, depth: 0 }
     ];
 
-    const table = createLinearizedTable(rows);
+    const table = createLinearizedTable(doc.documentElement, rows);
   
     const pointer = table.getXPointer(10);
     expect(pointer).toBe('/ROOT/CHILD::3');
