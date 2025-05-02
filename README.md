@@ -1,8 +1,6 @@
 # Recogito TEI/XML Standoff Converter
 
-Converts between TEI/XML, and a plaintext and standoff markup representation. The core logic was ported to 
-TypeScript from the excellent Python [standoffconverter](https://github.com/standoff-nlp/standoffconverter) 
-by [@millawell](https://github.com/millawell).
+A TEI manipulation utility. Parses the TEI/XML document into a linearized representation that allows you to make changes to the TEI based on text character offsets. The core logic was ported to TypeScript from the excellent Python [standoffconverter](https://github.com/standoff-nlp/standoffconverter) by [@millawell](https://github.com/millawell).
 
 ```sh
 npm install @recogito/standoff-converter
@@ -10,10 +8,10 @@ npm install @recogito/standoff-converter
 
 ## Features
 
-- Convert TEI/XML to plaintext, while retaining a mapping between text character offsets and TEI/XML markup position.
+- Convert TEI/XML to plaintext, while retaining a mapping between text character offsets and original TEI/XML markup structure.
 - Compute XPointer expressions from plaintext character offsets.
 - Modify TEI content easily by inserting new tags at plaintext character offsets. (E.g. insert new `<placeName>` or `<persName>` tags based on Named Entity parsing results!)
-- Serialize plaintext and (modified) standoff data back to TEI/XML.
+- Serialize modified data back to TEI/XML.
 
 ## Usage in the Browser
 
@@ -30,18 +28,18 @@ window.onload = async function () {
     const el = document.getElementById('orig').firstChild;
 
     // Parse CETEIcean content into a standoff representation
-    const standoff = parseXML(el);
+    const parsed = parseXML(el);
     console.log(standoff.rows);
 
     // Get XPointer expressions for character offsets
-    const start = standoff.getXPointer(190);
-    const end = standoff.getXPointer(200);
+    const start = parsed.getXPointer(190);
+    const end = parsed.getXPointer(200);
     console.log({ start, end });
 
     // Add inline tags at character positions
-    standoff.addInline(190, 252, 'tei-span', { role: 'highlighting' });
+    parsed.addInline(190, 252, 'tei-span', { role: 'highlighting' });
 
-    const teiElement = standoff.toXML();
+    const teiElement = parsed.toXML();
     document.getElementById('serialized').appendChild(teiElement);
   });
 };
@@ -71,19 +69,19 @@ const xml = `
   </TEI>
 `;
 
-const standoff = parseXML(xml);
+const parsed = parseXML(xml);
 
 // Get plaintext
-const text = standoff.text();
+const text = parsed.text();
 
 // Export XML
-const el = standoff.xml();
+const el = parsed.xml();
 
 // Export XML, serialized to string
-const xml = standoff.xmlString();
+const xml = parsed.xmlString();
 
 // Export file in JSON standoff representation
-const json = standoff.json();
+const json = parsed.json();
 ```
 
 ## TODO
