@@ -1,6 +1,6 @@
 {
   "name": "@recogito/standoff-converter",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Converts XML between tree and standoff representation",
   "license": "MIT",
   "type": "module",
