@@ -49,7 +49,7 @@
 
     <script type="module">
       import CETEI from 'CETEIcean';
-      import Converter from '../src/index.ts';
+      import { parseXML } from '../src/index.ts';
 
       window.onload = async function () {
         var CETEIcean = new CETEI();
@@ -58,7 +58,7 @@
           document.getElementById('orig').appendChild(data);
           const el = document.getElementById('orig').firstChild;
 
-          const standoff = Converter.parseXML(el);
+          const standoff = parseXML(el);
 
           // Get XPointer expression for 'first Book'
           const start = standoff.getXPointer(190);
