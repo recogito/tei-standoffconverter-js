@@ -1,4 +1,4 @@
-import { parseXML, Constants } from '../dom';
+import { Constants } from '../dom';
 import type { MarkupToken, MarkupTokenType } from '../types';
 
 interface FlatRecord {
@@ -55,10 +55,7 @@ const flattenTree = (el: Element): FlatRecord[] => {
   return result;
 }
 
-export const xml2linearized = (arg: Element | string): MarkupToken[] => {
-  const el = typeof arg === 'string' ? parseXML(arg) : arg;
-
-  // Flatten the tree
+export const xml2linearized = (el: Element): MarkupToken[] => {
   const flattened = flattenTree(el);
 
   const standoff: MarkupToken[] = []; 
@@ -71,7 +68,7 @@ export const xml2linearized = (arg: Element | string): MarkupToken[] => {
     
     standoff.push({
       position,
-      row_type: type,
+      type,
       el,
       depth,
       text

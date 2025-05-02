@@ -3,11 +3,11 @@ import { linearized2xml } from '../conversion';
 import type { MarkupToken } from '../types';
 import { createModifyOperations, createQueryOperations } from './operations';
 
-export const createLinearizedTable = (rows: MarkupToken[], namespace = 'http://www.tei-c.org/ns/1.0') => {
+export const createLinearizedTable = (el: Element, tokens: MarkupToken[], namespace = 'http://www.tei-c.org/ns/1.0') => {
 
-  const query = createQueryOperations(rows);
+  const query = createQueryOperations(tokens);
 
-  const modify = createModifyOperations(rows);
+  const modify = createModifyOperations(tokens);
 
   const _createElement = (tag: string, attrib?: Record<string, string>): Element => {
     const el = doc.createElementNS(namespace, tag);
@@ -43,26 +43,42 @@ export const createLinearizedTable = (rows: MarkupToken[], namespace = 'http://w
     secondParent.replaceChild(newEl, oldEl);
   }
 
-  // Creates the updated XML elements after a change to the offest rows
-  const _recreateSubtree = (parent: Element) => {
-    // Find the range of rows for this parent
-    const parentRows = rows.filter(row => row.el === parent);
-    if (parentRows.length === 0) return;
+  const removeInline = (
+    el: Element,
+    removeContents = true
+  ) => {
+    const matchingTokens = tokens.filter(t => t.el === el);
 
-    const firstIndex = rows.indexOf(parentRows[0]);
-    const lastIndex = rows.indexOf(parentRows[parentRows.length - 1]);
+    const openToken = matchingTokens.find(t => t.type === 'open');
+    const closeToken = matchingTokens.find(t => t.type === 'close');
+    const emptyToken = matchingTokens.find(t => t.type === 'empty');
 
-    const toUpdate = rows.slice(firstIndex, lastIndex + 1);
+    if (emptyToken) {
+      const emptyIndex = tokens.indexOf(emptyToken);
+      tokens.splice(emptyIndex, 1);
+    } else if (openToken && closeToken) {
+      const openIndex = tokens.indexOf(openToken);
+      const closeIndex = tokens.indexOf(closeToken);
 
-    // Recreate the subtree
-    const [newParentEl, oldElsToNewEls] = linearized2xml(toUpdate);
-
-    // Update the table with new elements
-    for (const [oldEl, newEl] of Object.entries(oldElsToNewEls)) {
-      modify.updateToken(oldEl as unknown as Element, { el: newEl });
+      if (removeContents) {
+        // Remove everything from open to close, inclusive
+        tokens.splice(openIndex, closeIndex - openIndex + 1);
+      } else {
+        // Remove just the open and close tokens and keep the rest
+        tokens.splice(closeIndex, 1);
+        tokens.splice(openIndex, 1);
+        
+        // Update depths of any child elements that remain
+        const childTokens = tokens.filter(t => {
+          const index = tokens.indexOf(t);
+          return index > openIndex && index < closeIndex - 1 && t.depth && t.depth > openToken.depth;
+        });
+        
+        for (const childToken of childTokens) {
+          modify.updateToken(childToken.el!, { depth: (childToken.depth! - 1) });
+        }
+      }
     }
-
-    _replaceElement(parent, newParentEl);
   }
 
   const addInline = (
@@ -74,7 +90,7 @@ export const createLinearizedTable = (rows: MarkupToken[], namespace = 'http://w
     // Existing tag boundaries between begin and end
     const boundaries = query.getBoundaries(begin, end);
 
-    const addSegment = (b: number, e: number, d?: number): Element => {
+    const addSegment = (b: number, e: number, d?: number) => {
       // Get parent context
       const parents = query.getParents(b, e, d);
       const newDepth = d ?? parents.length;
@@ -82,7 +98,7 @@ export const createLinearizedTable = (rows: MarkupToken[], namespace = 'http://w
       // Update child depths
       const children = query.getChildren(b, e, newDepth);
       for (const child of children) {
-        const childRow = rows.find(row => row.el === child);
+        const childRow = tokens.find(row => row.el === child);
         if (childRow)
           modify.updateToken(child, { depth: childRow.depth + 1 });
       }
@@ -97,13 +113,10 @@ export const createLinearizedTable = (rows: MarkupToken[], namespace = 'http://w
         modify.insertOpen(b, newEl, newDepth);
         modify.insertClose(e, newEl, newDepth);
       }
-
-      return parents[parents.length - 1];
     }
 
     if (boundaries.length <= 2) { // Just the begin and end positions
-      const parent = addSegment(begin, end);
-      _recreateSubtree(parent);
+      addSegment(begin, end);
     } else {
       // Create segments based on boundaries
       const segments: { start: number; end: number }[] = [];
@@ -112,26 +125,73 @@ export const createLinearizedTable = (rows: MarkupToken[], namespace = 'http://w
         segments.push({ start: boundaries[i], end: boundaries[i + 1] });
       }
 
-      const parents = segments.map(s => addSegment(s.start, s.end));
-      
-      // Root parents
-      const rootParents = parents.filter(el => !parents.some(other => other !== el && other.contains(el)));
-      [...rootParents].forEach(p => _recreateSubtree(p));
+      segments.map(s => addSegment(s.start, s.end));
     }
   }
 
+  const getCharacterOffset = (xpath: string) => {
+    const [path, offsetStr] = xpath.split('::');
+    if (!path || !offsetStr)
+      throw new Error(`Invalid XPath format: ${xpath}`);
+
+    const offset = parseInt(offsetStr);
+    if (isNaN(offset))
+      throw new Error(`Invalid XPath offset: ${xpath}`);
+
+    const normalized = '.' + path.replace(/\/([^[/]+)/g, (_, p1) => {
+      return '/tei-' + p1.toLowerCase();
+    }).replace(/xml:/g, '');
+
+    const parentNode = doc.evaluate(
+      normalized, 
+      el.parentElement, 
+      null, 
+      XPathResult.FIRST_ORDERED_NODE_TYPE,
+      null
+    ).singleNodeValue;
+
+    const token = tokens.find(t => t.el === parentNode && t.type === 'open');
+    return token ? token.position + offset : null;
+  }
+
+  const convertToInline = (el: Element) => {
+    const tagName = (el as HTMLElement).dataset.origname || el.tagName;
+    if (tagName.toLowerCase() !== 'annotation')
+      throw new Error('Element is not an annotation');
+
+    const target = el.getAttribute('target');
+    if (!target)
+      throw new Error('Cannot convert annotation - missing target attribute');
+
+    const [start, end] = target.split(' ');
+    if (!start || !end)
+      throw new Error(`Invalid target: ${target}`);
+
+    const startOffset = getCharacterOffset(start);
+    const endOffset = getCharacterOffset(end);
+
+    addInline(startOffset, endOffset, 'tei-note');
+  }
+
+  const annotations = () =>
+    query.getAnnotations().filter(t => t.type === 'open' && t.el).map(t => t.el);
+
   const xml = () => {
-    const [el, _] = linearized2xml(rows);
+    const [el, _] = linearized2xml(tokens);
     return el;
   }
 
   const xmlString = () => serializeXML(xml());
 
   return {
-    rows: rows,
+    tokens: tokens,
+    annotations,
     addInline,
+    convertToInline,
+    getCharacterOffset,
     getXPointer: query.getXPointer,
     json: query.toJSON,
+    removeInline,
     text: query.toText,
     xml,
     xmlString

@@ -8,7 +8,7 @@ export const linearized2xml = (rows: MarkupToken[], namespace = 'http://www.tei-
   
   // First pass: create all elements
   for (const row of rows) {
-    if ((row.row_type === 'open' || row.row_type === 'close' || row.row_type === 'empty') && row.el) {      
+    if ((row.type === 'open' || row.type === 'close' || row.type === 'empty') && row.el) {      
       if (!oldEls2newEls.get(row.el)) {
         const tagName = row.el.tagName.toLowerCase();
         const newEl = doc.createElementNS(row.el.namespaceURI || namespace, tagName);
@@ -42,20 +42,20 @@ export const linearized2xml = (rows: MarkupToken[], namespace = 'http://www.tei-
     
     lastPosition = row.position;
     
-    if (row.row_type === 'open' && row.el) {
+    if (row.type === 'open' && row.el) {
       const newEl = oldEls2newEls.get(row.el);
       
       if (currentParent) currentParent.appendChild(newEl);
 
       stack.push(currentParent);
       currentParent = newEl;
-    } else if (row.row_type === 'close' && row.el) {
+    } else if (row.type === 'close' && row.el) {
       currentParent = stack.pop() || null;
-    } else if (row.row_type === 'empty' && row.el) {
+    } else if (row.type === 'empty' && row.el) {
       const newEl = oldEls2newEls.get(row.el);
 
       if (currentParent) currentParent.appendChild(newEl);
-    } else if (row.row_type === 'text' && row.text) {
+    } else if (row.type === 'text' && row.text) {
       textBuffer += row.text;
     }
   }

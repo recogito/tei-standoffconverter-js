@@ -12,7 +12,7 @@ export const createModifyOperations = (rows: MarkupToken[]) => {
   const _splitStringAtPosition = (position: number) => {
     // Find the text row that contains this position
     const textRows = rows
-      .filter(row => row.row_type === 'text' && row.position <= position)
+      .filter(row => row.type === 'text' && row.position <= position)
       .sort((a, b) => b.position - a.position);
     
     if (textRows.length === 0)
@@ -32,7 +32,7 @@ export const createModifyOperations = (rows: MarkupToken[]) => {
 
     const newTokenBefore: MarkupToken = {
       position: lastTextRow.position,
-      row_type: 'text',
+      type: 'text',
       el: null,
       depth: lastTextRow.depth,
       text: textBefore
@@ -40,7 +40,7 @@ export const createModifyOperations = (rows: MarkupToken[]) => {
     
     const newTokenAfter: MarkupToken = {
       position: position,
-      row_type: 'text',
+      type: 'text',
       el: null,
       depth: lastTextRow.depth,
       text: textAfter
@@ -50,7 +50,7 @@ export const createModifyOperations = (rows: MarkupToken[]) => {
     rows.splice(originalIndex, 1, newTokenBefore, newTokenAfter);
   }
 
-  const _insert = (row_type: MarkupTokenType, position: number, el: Element, depth: number) => {
+  const _insert = (type: MarkupTokenType, position: number, el: Element, depth: number) => {
     // 1. Ensure position exists (may split text if needed)
     if (!rows.some(row => row.position === position)) 
       _splitStringAtPosition(position);
@@ -65,7 +65,7 @@ export const createModifyOperations = (rows: MarkupToken[]) => {
 
     const newRow: MarkupToken = {
       position,
-      row_type,
+      type,
       el,
       depth,
       text: null
@@ -98,7 +98,7 @@ export const createModifyOperations = (rows: MarkupToken[]) => {
       const current = rows[i];
       const next = rows[i + 1];
       
-      if (current.row_type === 'text' && next.row_type === 'text') {
+      if (current.type === 'text' && next.type === 'text') {
         // Merge them
         current.text = (current.text || '') + (next.text || '');
         rows.splice(i + 1, 1);

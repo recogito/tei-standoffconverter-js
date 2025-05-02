@@ -2,7 +2,7 @@ export interface MarkupToken {
 
   position: number;
 
-  row_type: MarkupTokenType;
+  type: MarkupTokenType;
 
   el: Element |null;
 

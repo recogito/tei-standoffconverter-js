@@ -1,16 +1,17 @@
+import { Constants } from '../../dom';
 import type { MarkupToken } from '../../types';
 
 export const createQueryOperations = (rows: MarkupToken[]) => {
 
   const toText = () => rows
-    .filter(row => row.row_type === 'text' && row.text)
+    .filter(row => row.type === 'text' && row.text)
     .map(row => row.text || '')
     .join('');
 
   const toJSON = () => rows
     .map(row => ({
       position: row.position,
-      type: row.row_type,
+      type: row.type,
       tag: row.el?.tagName,
       // attributes: TODO!
       depth: row.depth,
@@ -24,9 +25,9 @@ export const createQueryOperations = (rows: MarkupToken[]) => {
     const stack: Element[] = [];
 
     for (const row of rowsBefore) {
-      if (row.row_type === 'open' && row.el) {
+      if (row.type === 'open' && row.el) {
         stack.push(row.el);
-      } else if (row.row_type === 'close' && row.el) {
+      } else if (row.type === 'close' && row.el) {
         // Remove the element if it's in the stack
         const index = stack.findIndex(el => el === row.el);
         if (index !== -1) {
@@ -45,7 +46,7 @@ export const createQueryOperations = (rows: MarkupToken[]) => {
     // Find all tag boundaries between begin and end
     rows.forEach(row => {
       // Only consider open and close tags
-      if ((row.row_type === 'open' || row.row_type === 'close') && 
+      if ((row.type === 'open' || row.type === 'close') && 
           row.position > begin && 
           row.position < end) {
         boundaries.add(row.position);
@@ -85,12 +86,12 @@ export const createQueryOperations = (rows: MarkupToken[]) => {
     if (!posExists) {
       // Find the last text row before this position
       const slice = rows.filter(row => 
-        row.position < begin && row.row_type === 'text'
+        row.position < begin && row.type === 'text'
       );
       beginIdx = slice.length ? rows.indexOf(slice[slice.length - 1]) : 0;
     } else {
       const matches = rows.filter(row => 
-        row.position === begin && row.row_type === 'text'
+        row.position === begin && row.type === 'text'
       );
       beginIdx = matches.length ? rows.indexOf(matches[0]) : 0;
     }
@@ -105,11 +106,11 @@ export const createQueryOperations = (rows: MarkupToken[]) => {
       const cRow = rows[cRowIdx];
       cRowPos = cRow.position;
       
-      if (cRow.row_type === 'open' && cRow.el) {
+      if (cRow.type === 'open' && cRow.el) {
         cache.add(cRow.el);
       }
       
-      if (cRow.row_type === 'close' && cRow.el && cache.has(cRow.el)) {
+      if (cRow.type === 'close' && cRow.el && cache.has(cRow.el)) {
         children.add(cRow.el);
       }
       
@@ -119,21 +120,55 @@ export const createQueryOperations = (rows: MarkupToken[]) => {
     return Array.from(children);
   }
 
+  const getAnnotations = () => rows.filter(row => {
+    if (!row.el) return false;
+    const el = (row.el as HTMLElement);
+    const nodeName = el.dataset?.origname || el.tagName;
+    return nodeName.toLowerCase() === 'annotation';
+  });
+
   const getXPointer = (charOffset: number) => {
-    const rowsBefore = rows.filter(row => row.position <= charOffset);
-
-    const parents = getParentsAtPos(charOffset);
-    const tags = parents.map((el: HTMLElement) => {
-      // CETEIcean stores the original name in .origname
-      return el.dataset.origname || el.tagName;
-    });
     
-    const offset = charOffset - rowsBefore[rowsBefore.length - 1].position;
+    const getXPointerRecursive = (el: Element, segments: string[] = []) => {
+      let xpath: string;
+      let count: number;
+      let predicate: string;
+      
+      if (el.nodeType === Constants.ELEMENT_NODE && el.hasAttribute('xml:id')) {
+        segments.push('/');
+      } else if (el.parentElement) {
+        segments = getXPointerRecursive(el.parentElement, segments);
+      }
+      
+      if (el.nodeType === Constants.ELEMENT_NODE && el.nodeName.toLowerCase().startsWith('tei-')) {      
+        if (el.hasAttribute('xml:id')) {
+          predicate = `[@xml:id='${el.getAttribute('xml:id')}']`;
+        } else {
+          xpath = `count(preceding-sibling::${el.localName})`;
+          count = document.evaluate(xpath, el, null, XPathResult.NUMBER_TYPE, null).numberValue + 1;
+      
+          predicate = `[${count}]`;
+        }
+    
+        segments.push('/');
+        segments.push((el.getAttribute('data-origname') || el.tagName) + predicate);
+      }
+      
+      return segments;
+    }
 
-    return`/${tags.join('/')}::${offset}`;
+    const parents = rows.filter(row => row.position <= charOffset && row.type === 'open');
+    if (parents.length === 0)
+      throw new Error(`Invalid offset: ${charOffset}`);
+
+    const parent = parents[parents.length - 1];
+    const path = getXPointerRecursive(parent.el);
+    
+    return`${path.join('')}::${charOffset - parent.position}`;
   }
 
   return {
+    getAnnotations,
     getBoundaries,
     getChildren,
     getParents,

@@ -22,8 +22,12 @@
         justify-content: center;
       }
 
-      tei-span {
-        background-color: red;
+      tei-standoff {
+        display: none;
+      }
+
+      tei-note {
+        background-color: yellow;
       }
 
       #orig, #serialized {
@@ -61,12 +65,23 @@
           const parsed = parseXML(el);
 
           // Get XPointer expression for 'first Book'
-          const start = parsed.getXPointer(190);
-          const end = parsed.getXPointer(200);
-          console.log({ start, end });
+          // const start = parsed.getXPointer(555);
+          // const end = parsed.getXPointer(565);
+          // console.log({ start, end });
+
+          const startOffset = parsed.getCharacterOffset("//text[@xml:id='text-1']/body[1]/div[1]/p[4]/hi[1]::5");
+          const endOffset = parsed.getCharacterOffset("//text[@xml:id='text-1']/body[1]/div[1]/p[4]/hi[1]::15");
+
+          const plaintext = parsed.text();
+          console.log('clipped:', plaintext.substring(startOffset, endOffset));
 
           // Highlight 'first Book'
-          parsed.addInline(190, 252, 'tei-span', { role: 'highlighting' });
+          parsed.addInline(576, 581, 'tei-note', { role: 'highlighting' });
+
+          const annotation = parsed.annotations()[0];
+          parsed.convertToInline(annotation);
+
+          parsed.removeInline(annotation);
 
           const serialized = parsed.xml();
           document.getElementById('serialized').appendChild(serialized);
