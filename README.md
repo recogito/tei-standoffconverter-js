@@ -10,7 +10,8 @@ npm install @recogito/standoff-converter
 
 - Convert TEI/XML to plaintext, while retaining a mapping between text character offsets and original TEI/XML markup structure.
 - Compute XPointer expressions from plaintext character offsets.
-- Modify TEI content easily by inserting new tags at plaintext character offsets. (E.g. insert new `<placeName>` or `<persName>` tags based on Named Entity parsing results!)
+- Compute character offsets from XPointer expressions.
+- Modify TEI content easily by inserting new tags at plaintext character offsets. (E.g. insert new `<placeName>` or `<persName>` tags based on Named Entity parsing results!).
 - Serialize modified data back to TEI/XML.
 
 ## Usage in the Browser
@@ -27,18 +28,21 @@ window.onload = async function () {
     document.getElementById('orig').appendChild(data);
     const el = document.getElementById('orig').firstChild;
 
-    // Parse CETEIcean content into a standoff representation
+    // Parse CETEIcean content into a linearized representation
     const parsed = parseXML(el);
-    console.log(standoff.rows);
+    console.log(parsed.tokens);
 
-    // Get XPointer expressions for character offsets
-    const start = parsed.getXPointer(190);
-    const end = parsed.getXPointer(200);
-    console.log({ start, end });
+    // Get XPointer expressions from plaintext character offsets
+    console.log(parsed.getXPointer(550));
+
+    // Get character offsets from an XPointer expression (format: path::offset)
+    const xpointer = '//text[@xml:id="text-1"]/body[1]/div[1]/p[4]/hi[1]::5';
+    console.log(parsed.getCharacterOffset(xpointer));
 
     // Add inline tags at character positions
-    parsed.addInline(190, 252, 'tei-span', { role: 'highlighting' });
+    parsed.addInline(550, 560, 'tei-note', { type: 'comment', resp: 'aboutgeo' });
 
+    // Serialize back to TEI/XML
     const teiElement = parsed.toXML();
     document.getElementById('serialized').appendChild(teiElement);
   });
@@ -47,7 +51,7 @@ window.onload = async function () {
 
 ## Usage in Node
 
-This library works in Node (using [JSDOM](https://github.com/jsdom/jsdom) internally).
+This library works in Node (using [linkedom](https://github.com/WebReflection/linkedom) internally).
 
 ```ts
 import { parseXML } from '@recogito/standoff-converter';
@@ -74,14 +78,11 @@ const parsed = parseXML(xml);
 // Get plaintext
 const text = parsed.text();
 
-// Export XML
+// Export XML as linkedom Element
 const el = parsed.xml();
 
-// Export XML, serialized to string
+// Export XML as serialized string
 const xml = parsed.xmlString();
-
-// Export file in JSON standoff representation
-const json = parsed.json();
 ```
 
 ## TODO
