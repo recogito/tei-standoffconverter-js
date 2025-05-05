@@ -11,8 +11,44 @@ npm install @recogito/standoff-converter
 - Convert TEI/XML to plaintext, while retaining a mapping between text character offsets and original TEI/XML markup structure.
 - Compute XPointer expressions from plaintext character offsets.
 - Compute character offsets from XPointer expressions.
-- Modify TEI content easily by inserting new tags at plaintext character offsets. (E.g. insert new `<placeName>` or `<persName>` tags based on Named Entity parsing results!).
-- Serialize modified data back to TEI/XML.
+- Insert inline tags based on plaintext character offsets. (E.g. insert new `<placeName>` or `<persName>` tags based on Named Entity parsing results!).
+- Serialize modified content back to TEI/XML.
+
+## Usage in Node
+
+This library works in Node (using [xmldom](https://github.com/xmldom/xmldom) and [xpath](https://github.com/goto100/xpath) internally).
+
+```ts
+import { parseXML } from '@recogito/standoff-converter';
+
+const xml = `
+  <TEI xmlns="http://www.tei-c.org/ns/1.0">
+    <teiHeader>
+      <fileDesc>
+        <titleStmt>
+          <title>Sample TEI Document</title>
+        </titleStmt>
+      </fileDesc>
+    </teiHeader>
+    <text>
+      <body>
+        <p>This is a <hi rend="italic">sample</hi> paragraph with <term>markup</term>.</p>
+      </body>
+    </text>
+  </TEI>
+`;
+
+const parsed = parseXML(xml);
+
+// Get plaintext
+const text = parsed.text();
+
+// Export XML as linkedom Element
+const el = parsed.xml();
+
+// Export XML as serialized string
+const xml = parsed.xmlString();
+```
 
 ## Usage in the Browser
 
@@ -49,45 +85,7 @@ window.onload = async function () {
 };
 ```
 
-## Usage in Node
-
-This library works in Node (using [linkedom](https://github.com/WebReflection/linkedom) internally).
-
-```ts
-import { parseXML } from '@recogito/standoff-converter';
-
-const xml = `
-  <TEI xmlns="http://www.tei-c.org/ns/1.0">
-    <teiHeader>
-      <fileDesc>
-        <titleStmt>
-          <title>Sample TEI Document</title>
-        </titleStmt>
-      </fileDesc>
-    </teiHeader>
-    <text>
-      <body>
-        <p>This is a <hi rend="italic">sample</hi> paragraph with <term>markup</term>.</p>
-      </body>
-    </text>
-  </TEI>
-`;
-
-const parsed = parseXML(xml);
-
-// Get plaintext
-const text = parsed.text();
-
-// Export XML as linkedom Element
-const el = parsed.xml();
-
-// Export XML as serialized string
-const xml = parsed.xmlString();
-```
-
 ## TODO
-
-- **Utility function to remove whitespace**. Some NER packages may collapse whitespace/newlines from text. This would lead to inconsistent character offsets between plaintext extracted via `.text()` and the NER tokens.
 
 - **Handle existing standoff elements**. Currently, this library parses the markup only, but ignores `<standOff>` blocks in the TEI. Therefore, annotation offsets in existing standOff elements will break if the TEI is modified. We would need to parse the standOff elements, too, and incorprate them into the standoff map, in order to keep standoff pointers in sync with the TEI document.
 
