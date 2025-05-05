@@ -22,8 +22,8 @@
         justify-content: center;
       }
 
-      tei-standoff {
-        display: none;
+      tei-standOff {
+        display: none !important;
       }
 
       tei-note {
@@ -78,11 +78,13 @@
           console.log('clipped:', plaintext.substring(startOffset, endOffset));
 
           // Highlight 'first Book'
-          parsed.addInline(startOffset + 21, startOffset + 26, 'tei-note', { role: 'highlighting' });
+          parsed.addInline(startOffset + 21, startOffset + 26, 'tei-nOte', { role: 'highlighting' });
 
-          const annotation = parsed.annotations()[0];
-          parsed.removeInline(annotation);
-          parsed.convertToInline(annotation);
+          console.log(parsed.tokens);
+
+          // const annotation = parsed.annotations()[0];
+          // parsed.removeInline(annotation);
+          // parsed.convertToInline(annotation);
 
           const serialized = parsed.xml();
           document.getElementById('serialized').appendChild(serialized);

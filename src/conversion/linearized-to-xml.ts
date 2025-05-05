@@ -10,7 +10,7 @@ export const linearized2xml = (rows: MarkupToken[], namespace = 'http://www.tei-
   for (const row of rows) {
     if ((row.type === 'open' || row.type === 'close' || row.type === 'empty') && row.el) {      
       if (!oldEls2newEls.get(row.el)) {
-        const tagName = row.el.tagName.toLowerCase();
+        const tagName = (row.el as any).dataset?.origname ? 'tei-' + (row.el as any).dataset.origname : row.el.tagName;
         const newEl = doc.createElementNS(row.el.namespaceURI || namespace, tagName);
         
         // Copy attributes

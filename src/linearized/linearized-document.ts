@@ -1,6 +1,6 @@
 import { doc, evaluateXPath, serializeXML } from '../dom';
-import { linearized2xml } from '../conversion';
-import type { MarkupToken } from '../types';
+import { linearized2xml, parseAnnotation } from '../conversion';
+import type { MarkupToken, StandoffAnnotation } from '../types';
 import { createModifyOperations, createQueryOperations } from './operations';
 
 export const createLinearizedTable = (el: Element, tokens: MarkupToken[], namespace = 'http://www.tei-c.org/ns/1.0') => {
@@ -164,11 +164,17 @@ export const createLinearizedTable = (el: Element, tokens: MarkupToken[], namesp
   }
 
   const annotations = () =>
-    query.getAnnotations().filter(t => t.type === 'open' && t.el).map(t => t.el);
+    query.getAnnotations()
+      .filter(t => t.type === 'open' && t.el).map(t => t.el)
+      .map(parseAnnotation);
 
   const xml = () => {
     const [el, _] = linearized2xml(tokens);
     return el;
+  }
+
+  const addAnnotation = (annotation: StandoffAnnotation) => {
+    
   }
 
   const xmlString = () => serializeXML(xml());

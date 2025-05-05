@@ -22,11 +22,11 @@ describe('StandoffTable', () => {
 
     const table = createLinearizedTable(root, rows);
 
-    table.addInline(0, 5, 'child', { 'role': 'testing' });
+    table.addInline(0, 5, 'childNode', { 'role': 'testing' });
 
     expect(table.tokens.length).toBe(6);
 
-    const newRow = table.tokens.find(token => token.type === 'open' && (token.el as Element)?.tagName === 'child');
+    const newRow = table.tokens.find(token => token.type === 'open' && (token.el as Element)?.tagName === 'childNode');
     expect(newRow).toBeTruthy();
     expect((newRow?.el as Element)?.getAttribute('role')).toBe('testing');
   });
@@ -43,7 +43,10 @@ describe('StandoffTable', () => {
 
     const table = createLinearizedTable(doc.documentElement as unknown as Element, rows);
 
-    table.addInline(0, 5, 'child', { 'role': 'testing' });
+    table.addInline(0, 5, 'childNode', { 'role': 'testing' });
+
+    const serialized = table.xmlString();
+    expect(serialized.includes('childNode')).toBeTruthy();
 
     const updatedText = table.text();
     expect(updatedText).toContain('Hello');
