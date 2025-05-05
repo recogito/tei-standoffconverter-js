@@ -1,5 +1,9 @@
 import { Constants } from './dom';
 
+/**
+ * Note that XMLDOM does not support any of the optional DOM interfaces,
+ * incl. `.children` and `.firstElementChild`.
+ */
 export const getChildren = (node: Node): Element[] => {
   const children: Element[] = [];
   let child = node.firstChild;
