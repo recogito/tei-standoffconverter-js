@@ -1,15 +1,18 @@
 import { describe, it, expect } from 'vitest';
-import { parseHTML } from 'linkedom';
+import { DOMParser } from '@xmldom/xmldom';
 import { parseXML } from '../../src';
 import { createLinearizedTable } from '../../src/linearized';
-import type { MarkupToken } from '../../src/types';
+import type { Element, MarkupToken } from '../../src/types';
 
 describe('StandoffTable', () => {
-  const createDocument = () => parseHTML('<!DOCTYPE html><body></body>').window.document;
+  const createDocument = () => {
+    const parser = new DOMParser();
+    return parser.parseFromString('<!DOCTYPE html><body></body>', 'text/xml');
+  } 
 
   it('should correctly add inline elements', () => {
     const doc = createDocument();
-    const root = doc.createElement('root');
+    const root = doc.createElement('root') as unknown as Element;
 
     const rows: MarkupToken[] = [
       { type: 'open', position: 0, el: root, depth: 0 },
@@ -23,14 +26,14 @@ describe('StandoffTable', () => {
 
     expect(table.tokens.length).toBe(6);
 
-    const newRow = table.tokens.find(token => token.type === 'open' && (token.el as Element)?.tagName === 'CHILD');
+    const newRow = table.tokens.find(token => token.type === 'open' && (token.el as Element)?.tagName === 'child');
     expect(newRow).toBeTruthy();
     expect((newRow?.el as Element)?.getAttribute('role')).toBe('testing');
   });
 
   it('should serialize to text correctly', () => {
     const doc = createDocument();
-    const root = doc.createElement('root');
+    const root = doc.createElement('root') as unknown as Element;
 
     const rows: MarkupToken[] = [
       { type: 'open', position: 0, el: root, depth: 0 },
@@ -38,7 +41,7 @@ describe('StandoffTable', () => {
       { type: 'close', position: 13, el: root, depth: 0 }
     ];
 
-    const table = createLinearizedTable(doc.documentElement, rows);
+    const table = createLinearizedTable(doc.documentElement as unknown as Element, rows);
 
     table.addInline(0, 5, 'child', { 'role': 'testing' });
 

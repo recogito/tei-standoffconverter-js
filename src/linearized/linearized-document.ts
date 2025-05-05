@@ -1,7 +1,6 @@
-import _xpath from 'xpath';
-import { doc, evaluateXPathToFirstNode, serializeXML } from '../dom';
+import { doc, evaluateXPath, serializeXML } from '../dom';
 import { linearized2xml } from '../conversion';
-import type { MarkupToken } from '../types';
+import type { Element, MarkupToken } from '../types';
 import { createModifyOperations, createQueryOperations } from './operations';
 
 export const createLinearizedTable = (el: Element, tokens: MarkupToken[], namespace = 'http://www.tei-c.org/ns/1.0') => {
@@ -22,7 +21,7 @@ export const createLinearizedTable = (el: Element, tokens: MarkupToken[], namesp
       });
     }
     
-    return el;
+    return el as Element;
   }
 
   const removeInline = (
@@ -133,12 +132,14 @@ export const createLinearizedTable = (el: Element, tokens: MarkupToken[], namesp
     if (isNaN(offset))
       throw new Error(`Invalid XPath offset: ${xpath}`);
 
+    const isCETEIcean = Boolean((el as any).dataset?.origname);
+
     const normalized = path.replace(/\/([^[/]+)/g, (_, p1) => {
-      return '/' + p1;
+      return isCETEIcean ? '/tei-' + p1 : '/' + p1;
     }).replace(/xml:/g, '');
 
-    const parentNode = evaluateXPathToFirstNode(normalized, el);
-    
+    const parentNode = evaluateXPath(normalized, el);
+
     const token = tokens.find(t => t.el === parentNode && t.type === 'open');
     return token ? token.position + offset : null;
   }

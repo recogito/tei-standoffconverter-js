@@ -1,7 +1,6 @@
-import { parseHTML } from 'linkedom';
-import { evaluateXPathToFirstNode as _evaluateXPathToFirstNode } from 'fontoxpath';
-import { DOMParser as NodeDOMParser } from '@xmldom/xmldom';
-import _xpath from 'xpath';
+import { Node, DOMParser as NodeDOMParser } from '@xmldom/xmldom';
+import xpath from 'xpath';
+import type { Element as CrossplatformElement } from './types';
 
 let doc: Document;
 
@@ -15,11 +14,11 @@ let Constants: {
 
 };
 
-let parseXML: (xml: string) => Element;
+let parseXML: (xml: string) => CrossplatformElement;
 
-let serializeXML: (element: Element) => string;
+let serializeXML: (element: CrossplatformElement) => string;
 
-let evaluateXPathToFirstNode: (xpath: string, el: Element) => any;
+let evaluateXPath: (xpath: string, el: CrossplatformElement) => any;
 
 if (typeof document !== 'undefined') {
   // Browser
@@ -34,59 +33,45 @@ if (typeof document !== 'undefined') {
   parseXML = (xml: string) => {
     const parser = new DOMParser();
     const doc = parser.parseFromString(xml, 'text/xml');
-    return doc.documentElement;
+    return doc.documentElement as CrossplatformElement;
   }
 
-  serializeXML = (element: Element) => {
+  serializeXML = (element: CrossplatformElement) => {
     const serializer = new XMLSerializer();
-    return serializer.serializeToString(element);
+    return serializer.serializeToString(element as Element);
   }
 
-  evaluateXPathToFirstNode = (xpath: string, el: Element) => doc.evaluate(
-    xpath, 
-    el, 
-    null, 
-    XPathResult.FIRST_ORDERED_NODE_TYPE,
-    null
-  ).singleNodeValue;
+  evaluateXPath = (expression: string, el: CrossplatformElement) => {
+    return document.evaluate(
+      expression, 
+      el as Element, 
+      null, 
+      XPathResult.FIRST_ORDERED_NODE_TYPE,
+      null
+    ).singleNodeValue;
+  } 
 } else {
   // NodeJS
-  const dom = parseHTML('<!DOCTYPE html><html></html>');
-  doc = dom.window.document;
+  doc = new NodeDOMParser().parseFromString('<root />', 'text/xml') as unknown as Document;
 
   Constants = {
-    ELEMENT_NODE: dom.window.Node.ELEMENT_NODE,
-    TEXT_NODE: dom.window.Node.TEXT_NODE,
+    ELEMENT_NODE: Node.ELEMENT_NODE,
+    TEXT_NODE: Node.TEXT_NODE,
     NUMBER_TYPE: 1
   };
 
-  // @ts-ignore
   parseXML = (xml: string) => {
     const parser = new NodeDOMParser();
-    return parser.parseFromString(xml, 'text/xml').documentElement;
+    return parser.parseFromString(xml, 'text/xml').documentElement as unknown as CrossplatformElement;
   }
 
-  serializeXML = (element: Element) => {
-    return element.toString();
-    /*
-    console.log('serializing', dom.window.XMLSerializer);
-    const serializer = new dom.window.XMLSerializer();
-    return serializer.serializeToString(element);*/
-  }
+  serializeXML = (element: CrossplatformElement) => element.toString();
 
-  evaluateXPathToFirstNode = (xpath: string, el: Element) => {
-    // TODO we can hopefully optimize/unify in the future. But for now:
-    // - xmldom seems to lack the document.createElementNS method
-    // - linkedom lacks XPath support
-    // const serialized = serializeXML(el);
-
-    // const parser = new NodeDOMParser();
-    // const parsed = parser.parseFromString(serialized, 'text/xml');
-    // return _evaluateXPathToFirstNode(xpath.toLowerCase(), el);
-
-    return _xpath.select1(xpath, el);
+  evaluateXPath = (expression: string, el: CrossplatformElement) => {
+    console.log(expression);
+    return xpath.select1(expression, el as Element);
   }
 
 }
 
-export { doc, Constants, evaluateXPathToFirstNode, parseXML, serializeXML };
+export { doc, Constants, evaluateXPath, parseXML, serializeXML };

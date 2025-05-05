@@ -36,8 +36,6 @@
   },
   "dependencies": {
     "@xmldom/xmldom": "^0.9.8",
-    "fontoxpath": "^3.33.2",
-    "linkedom": "^0.18.10",
     "xpath": "^0.0.34"
   }
 }

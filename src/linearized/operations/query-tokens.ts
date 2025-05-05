@@ -1,5 +1,5 @@
 import { Constants } from '../../dom';
-import type { MarkupToken } from '../../types';
+import type { Element, MarkupToken } from '../../types';
 
 export const createQueryOperations = (rows: MarkupToken[]) => {
 

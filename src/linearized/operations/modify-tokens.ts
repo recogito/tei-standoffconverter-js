@@ -1,4 +1,4 @@
-import type { MarkupToken, MarkupTokenType } from '../../types';
+import type { Element, MarkupToken, MarkupTokenType } from '../../types';
 
 export const createModifyOperations = (rows: MarkupToken[]) => {
 
