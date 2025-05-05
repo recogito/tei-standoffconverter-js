@@ -1,12 +1,12 @@
 import { describe, it, expect } from 'vitest';
-import { parseHTML } from 'linkedom';
+import { DOMParser } from '@xmldom/xmldom';
 import { xml2linearized } from '../../src/conversion';
 
 describe('xml2standoff', () => {
 
   const createElementFromXML = (xmlString: string): Element => {
-    const dom = parseHTML(xmlString);
-    return dom.window.document.documentElement;
+    const parser = new DOMParser();
+    return parser.parseFromString(xmlString, 'text/xml').documentElement as unknown as Element;
   }
 
   it('should handle a simple XML element', () => {
@@ -31,19 +31,19 @@ describe('xml2standoff', () => {
 
     expect(result).toHaveLength(5);
     expect(result[0].type).toBe('open');
-    expect(result[0].el.nodeName).toBe('ROOT');
+    expect(result[0].el.tagName).toBe('root');
     expect(result[0].position).toBe(0);
     expect(result[1].type).toBe('open');
-    expect(result[1].el.nodeName).toBe('CHILD');
+    expect(result[1].el.tagName).toBe('child');
     expect(result[1].position).toBe(0);
     expect(result[2].type).toBe('text');
     expect(result[2].text).toBe('Text');
     expect(result[2].position).toBe(0);
     expect(result[3].type).toBe('close');
-    expect(result[3].el.nodeName).toBe('CHILD');
+    expect(result[3].el.tagName).toBe('child');
     expect(result[3].position).toBe(4);
     expect(result[4].type).toBe('close');
-    expect(result[4].el.nodeName).toBe('ROOT');
+    expect(result[4].el.tagName).toBe('root');
     expect(result[4].position).toBe(4);
   });
 
@@ -144,15 +144,15 @@ describe('xml2standoff', () => {
     const textNodes = result.filter(r => r.type === 'text').map(r => r.text);
     
     expect(openElements).toContain('TEI');
-    expect(openElements).toContain('TEIHEADER');
-    expect(openElements).toContain('FILEDESC');
-    expect(openElements).toContain('TITLESTMT');
-    expect(openElements).toContain('TITLE');
-    expect(openElements).toContain('TEXT');
-    expect(openElements).toContain('BODY');
-    expect(openElements).toContain('P');
-    expect(openElements).toContain('HI');
-    expect(openElements).toContain('TERM');
+    expect(openElements).toContain('teiHeader');
+    expect(openElements).toContain('fileDesc');
+    expect(openElements).toContain('titleStmt');
+    expect(openElements).toContain('title');
+    expect(openElements).toContain('text');
+    expect(openElements).toContain('body');
+    expect(openElements).toContain('p');
+    expect(openElements).toContain('hi');
+    expect(openElements).toContain('term');
     
     expect(textNodes).toContain('Sample TEI Document');
     expect(textNodes).toContain('This is a ');

@@ -1,4 +1,5 @@
-import { parseHTML } from 'linkedom';
+import { Node, DOMParser as NodeDOMParser } from '@xmldom/xmldom';
+import xpath from 'xpath';
 
 let doc: Document;
 
@@ -13,7 +14,10 @@ let Constants: {
 };
 
 let parseXML: (xml: string) => Element;
+
 let serializeXML: (element: Element) => string;
+
+let evaluateXPath: (xpath: string, el: Element) => any;
 
 if (typeof document !== 'undefined') {
   // Browser
@@ -35,26 +39,37 @@ if (typeof document !== 'undefined') {
     const serializer = new XMLSerializer();
     return serializer.serializeToString(element);
   }
+
+  evaluateXPath = (expression: string, el: Element) => {
+    return document.evaluate(
+      expression, 
+      el, 
+      null, 
+      XPathResult.FIRST_ORDERED_NODE_TYPE,
+      null
+    ).singleNodeValue;
+  } 
 } else {
   // NodeJS
-  const dom = parseHTML('<!DOCTYPE html><html></html>');
-  doc = dom.window.document;
+  doc = new NodeDOMParser().parseFromString('<root />', 'text/xml') as unknown as Document;
 
   Constants = {
-    ELEMENT_NODE: dom.window.Node.ELEMENT_NODE,
-    TEXT_NODE: dom.window.Node.TEXT_NODE,
+    ELEMENT_NODE: Node.ELEMENT_NODE,
+    TEXT_NODE: Node.TEXT_NODE,
     NUMBER_TYPE: 1
   };
 
   parseXML = (xml: string) => {
-    const dom = parseHTML(xml);
-    return dom.window.document.documentElement;
+    const parser = new NodeDOMParser();
+    return parser.parseFromString(xml, 'text/xml').documentElement as unknown as Element;
   }
 
-  serializeXML = (element: Element, options?: { pretty?: boolean, declaration?: boolean }) => {
-    const serializer = new dom.window.XMLSerializer();
-    return serializer.serializeToString(element);
+  serializeXML = (element: Element) => element.toString();
+
+  evaluateXPath = (expression: string, el: Element) => {
+    return xpath.select1(expression, el);
   }
+
 }
 
-export { doc, Constants, parseXML, serializeXML };
+export { doc, Constants, evaluateXPath, parseXML, serializeXML };
