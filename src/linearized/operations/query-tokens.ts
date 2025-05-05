@@ -1,4 +1,4 @@
-import { doc, Constants } from '../../dom';
+import { Constants } from '../../dom';
 import type { MarkupToken } from '../../types';
 
 export const createQueryOperations = (rows: MarkupToken[]) => {
@@ -129,11 +129,7 @@ export const createQueryOperations = (rows: MarkupToken[]) => {
 
   const getXPointer = (charOffset: number) => {
     
-    const getXPointerRecursive = (el: Element, segments: string[] = []) => {
-      let xpath: string;
-      let count: number;
-      let predicate: string;
-      
+    const getXPointerRecursive = (el: Element, segments: string[] = []) => {      
       if (el.nodeType === Constants.ELEMENT_NODE && el.hasAttribute('xml:id')) {
         segments.push('/');
       } else if (el.parentElement) {
@@ -141,12 +137,21 @@ export const createQueryOperations = (rows: MarkupToken[]) => {
       }
       
       if (el.nodeType === Constants.ELEMENT_NODE) {      
+        let predicate: string;
+
         if (el.hasAttribute('xml:id')) {
           predicate = `[@xml:id='${el.getAttribute('xml:id')}']`;
         } else {
-          xpath = `count(preceding-sibling::${el.localName})`;
-          count = doc.evaluate(xpath, el, null, Constants.NUMBER_TYPE, null).numberValue + 1;
-      
+          let count = 1;
+          let sibling = el.previousElementSibling;
+          
+          while (sibling) {
+            if (sibling.tagName === el.tagName) {
+              count++;
+            }
+            sibling = sibling.previousElementSibling;
+          }
+          
           predicate = `[${count}]`;
         }
     
