@@ -143,15 +143,19 @@ export const createQueryOperations = (rows: MarkupToken[]) => {
           predicate = `[@xml:id='${el.getAttribute('xml:id')}']`;
         } else {
           let count = 1;
-          let sibling = el.previousElementSibling;
-          
+          let sibling = el.previousSibling;
+
           while (sibling) {
-            if (sibling.tagName === el.tagName) {
+            // Only count element siblings with the same tag name
+            if (
+              sibling.nodeType === Constants.ELEMENT_NODE &&
+              (sibling as any).tagName === el.tagName
+            ) {
               count++;
             }
-            sibling = sibling.previousElementSibling;
+            sibling = sibling.previousSibling;
           }
-          
+
           predicate = `[${count}]`;
         }
     

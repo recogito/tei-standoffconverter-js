@@ -1,4 +1,5 @@
-import { doc, serializeXML } from '../dom';
+import _xpath from 'xpath';
+import { doc, evaluateXPathToFirstNode, serializeXML } from '../dom';
 import { linearized2xml } from '../conversion';
 import type { MarkupToken } from '../types';
 import { createModifyOperations, createQueryOperations } from './operations';
@@ -132,18 +133,12 @@ export const createLinearizedTable = (el: Element, tokens: MarkupToken[], namesp
     if (isNaN(offset))
       throw new Error(`Invalid XPath offset: ${xpath}`);
 
-    const normalized = '.' + path.replace(/\/([^[/]+)/g, (_, p1) => {
-      return '/tei-' + p1.toLowerCase();
+    const normalized = path.replace(/\/([^[/]+)/g, (_, p1) => {
+      return '/' + p1;
     }).replace(/xml:/g, '');
 
-    const parentNode = doc.evaluate(
-      normalized, 
-      el.parentElement, 
-      null, 
-      XPathResult.FIRST_ORDERED_NODE_TYPE,
-      null
-    ).singleNodeValue;
-
+    const parentNode = evaluateXPathToFirstNode(normalized, el);
+    
     const token = tokens.find(t => t.el === parentNode && t.type === 'open');
     return token ? token.position + offset : null;
   }

@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { parseHTML } from 'linkedom';
+import { parseXML } from '../../src';
 import { createLinearizedTable } from '../../src/linearized';
 import type { MarkupToken } from '../../src/types';
-import { parseXML } from 'src';
 
 describe('StandoffTable', () => {
   const createDocument = () => parseHTML('<!DOCTYPE html><body></body>').window.document;
@@ -58,6 +58,38 @@ describe('StandoffTable', () => {
         </teiHeader>
         <text>
           <body>
+            <div></div>
+            <div>Hello World</div>
+            <div>
+              <p>This is a <hi rend="italic">sample</hi> paragraph with <term>markup</term>.</p>
+            </div>
+            <div></div>
+          </body>
+        </text>
+      </TEI>
+    `;
+
+    const parsed = parseXML(xml);
+    
+    const text = parsed.text().substring(190, 194);
+    expect(text).toBe('is a');
+
+    const pointer = parsed.getXPointer(190);
+    expect(pointer).toBe('/TEI[1]/text[1]/body[1]/div[3]/p[1]::5');
+  });
+
+  it('should generate correct character offsets', () => {
+    const xml = `
+      <TEI>
+        <teiHeader>
+          <fileDesc>
+            <titleStmt>
+              <title>Sample TEI Document</title>
+            </titleStmt>
+          </fileDesc>
+        </teiHeader>
+        <text>
+          <body>
             <p />
             <p>This is a <hi rend="italic">sample</hi> paragraph with <term>markup</term>.</p>
           </body>
@@ -65,15 +97,13 @@ describe('StandoffTable', () => {
       </TEI>
     `;
 
-    const doc = parseHTML(xml).window.document;
+    const parsed = parseXML(xml);
 
-    const parsed = parseXML(doc.documentElement);
-    
     const text = parsed.text().substring(151, 155);
     expect(text).toBe('is a');
 
-    const pointer = parsed.getXPointer(151);
-    expect(pointer).toBe('/TEI[1]/TEXT[1]/BODY[1]/P[2]::5');
+    const offset = parsed.getCharacterOffset('/TEI[1]/text[1]/body[1]/p[2]::5');
+    expect(offset).toBe(151);
   });
 
 });
