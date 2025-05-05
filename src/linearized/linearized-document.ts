@@ -1,6 +1,6 @@
 import { doc, evaluateXPath, serializeXML } from '../dom';
 import { linearized2xml } from '../conversion';
-import type { Element, MarkupToken } from '../types';
+import type { MarkupToken } from '../types';
 import { createModifyOperations, createQueryOperations } from './operations';
 
 export const createLinearizedTable = (el: Element, tokens: MarkupToken[], namespace = 'http://www.tei-c.org/ns/1.0') => {

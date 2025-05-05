@@ -1,6 +1,5 @@
 import { Node, DOMParser as NodeDOMParser } from '@xmldom/xmldom';
 import xpath from 'xpath';
-import type { Element as CrossplatformElement } from './types';
 
 let doc: Document;
 
@@ -14,11 +13,11 @@ let Constants: {
 
 };
 
-let parseXML: (xml: string) => CrossplatformElement;
+let parseXML: (xml: string) => Element;
 
-let serializeXML: (element: CrossplatformElement) => string;
+let serializeXML: (element: Element) => string;
 
-let evaluateXPath: (xpath: string, el: CrossplatformElement) => any;
+let evaluateXPath: (xpath: string, el: Element) => any;
 
 if (typeof document !== 'undefined') {
   // Browser
@@ -33,18 +32,18 @@ if (typeof document !== 'undefined') {
   parseXML = (xml: string) => {
     const parser = new DOMParser();
     const doc = parser.parseFromString(xml, 'text/xml');
-    return doc.documentElement as CrossplatformElement;
+    return doc.documentElement;
   }
 
-  serializeXML = (element: CrossplatformElement) => {
+  serializeXML = (element: Element) => {
     const serializer = new XMLSerializer();
-    return serializer.serializeToString(element as Element);
+    return serializer.serializeToString(element);
   }
 
-  evaluateXPath = (expression: string, el: CrossplatformElement) => {
+  evaluateXPath = (expression: string, el: Element) => {
     return document.evaluate(
       expression, 
-      el as Element, 
+      el, 
       null, 
       XPathResult.FIRST_ORDERED_NODE_TYPE,
       null
@@ -62,14 +61,13 @@ if (typeof document !== 'undefined') {
 
   parseXML = (xml: string) => {
     const parser = new NodeDOMParser();
-    return parser.parseFromString(xml, 'text/xml').documentElement as unknown as CrossplatformElement;
+    return parser.parseFromString(xml, 'text/xml').documentElement as unknown as Element;
   }
 
-  serializeXML = (element: CrossplatformElement) => element.toString();
+  serializeXML = (element: Element) => element.toString();
 
-  evaluateXPath = (expression: string, el: CrossplatformElement) => {
-    console.log(expression);
-    return xpath.select1(expression, el as Element);
+  evaluateXPath = (expression: string, el: Element) => {
+    return xpath.select1(expression, el);
   }
 
 }

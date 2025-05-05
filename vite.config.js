@@ -6,7 +6,7 @@ export default defineConfig({
     dts({ 
       insertTypesEntry: true,
       entryRoot: '.',
-      rollupTypes: true // Add this line
+      rollupTypes: true
     })
   ],
   server: {
@@ -22,10 +22,11 @@ export default defineConfig({
       formats: ['es', 'umd']
     },
     rollupOptions: {
-      external: ['linkedom'],
+      external: ['@xmldom/xmldom', 'xpath'],
       output: {
         globals: {
-          linkedom: 'linkedom'
+          '@xmldom/xmldom': '@xmldom/xmldom',
+          'xpath': 'xpath'
         }
       }
     }

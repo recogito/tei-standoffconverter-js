@@ -1,7 +1,6 @@
 import { parseXML as _parseXML } from './dom';
 import { createLinearizedTable } from './linearized';
 import { xml2linearized } from './conversion';
-import type { Element } from './types';
 
 export const parseXML = (arg: Element | string) => {
   const el = typeof arg === 'string' ? _parseXML(arg) : arg;

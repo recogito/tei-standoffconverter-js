@@ -1,5 +1,4 @@
 import { Constants } from './dom';
-import type { Element } from './types';
 
 export const getChildren = (node: Node): Element[] => {
   const children: Element[] = [];

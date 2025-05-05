@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { DOMParser } from '@xmldom/xmldom';
 import { parseXML } from '../../src';
 import { createLinearizedTable } from '../../src/linearized';
-import type { Element, MarkupToken } from '../../src/types';
+import type { MarkupToken } from '../../src/types';
 
 describe('StandoffTable', () => {
   const createDocument = () => {

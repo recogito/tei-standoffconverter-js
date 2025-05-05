@@ -1,5 +1,5 @@
 import { Constants } from '../dom';
-import type { Element, MarkupToken, MarkupTokenType } from '../types';
+import type { MarkupToken, MarkupTokenType } from '../types';
 
 interface FlatRecord {
 
@@ -24,7 +24,7 @@ const flattenTree = (el: Element): FlatRecord[] => {
     if (node.nodeType === Constants.ELEMENT_NODE) {
       result.push({
         type: 'open',
-        el: node as unknown as Element,
+        el: node as Element,
         depth,
         text: null
       });
@@ -36,7 +36,7 @@ const flattenTree = (el: Element): FlatRecord[] => {
       
       result.push({
         type: 'close',
-        el: node as unknown as Element,
+        el: node as Element,
         depth,
         text: null
       });
@@ -50,7 +50,7 @@ const flattenTree = (el: Element): FlatRecord[] => {
     }
   }
   
-  processNode(el as unknown as Node);
+  processNode(el);
 
   return result;
 }

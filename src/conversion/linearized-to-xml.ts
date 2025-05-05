@@ -1,5 +1,5 @@
 import { doc } from '../dom';
-import type { Element, MarkupToken } from '../types';
+import type { MarkupToken } from '../types';
 
 export const linearized2xml = (rows: MarkupToken[], namespace = 'http://www.tei-c.org/ns/1.0') => {
   const oldEls2newEls = new Map<Element, Element>();
@@ -11,7 +11,7 @@ export const linearized2xml = (rows: MarkupToken[], namespace = 'http://www.tei-
     if ((row.type === 'open' || row.type === 'close' || row.type === 'empty') && row.el) {      
       if (!oldEls2newEls.get(row.el)) {
         const tagName = row.el.tagName.toLowerCase();
-        const newEl = doc.createElementNS(row.el.namespaceURI || namespace, tagName) as Element;
+        const newEl = doc.createElementNS(row.el.namespaceURI || namespace, tagName);
         
         // Copy attributes
         for (let i = 0; i < row.el.attributes.length; i++) {
@@ -45,7 +45,7 @@ export const linearized2xml = (rows: MarkupToken[], namespace = 'http://www.tei-
     if (row.type === 'open' && row.el) {
       const newEl = oldEls2newEls.get(row.el);
       
-      if (currentParent) currentParent.appendChild(newEl as unknown as Node);
+      if (currentParent) currentParent.appendChild(newEl);
 
       stack.push(currentParent);
       currentParent = newEl;
@@ -54,7 +54,7 @@ export const linearized2xml = (rows: MarkupToken[], namespace = 'http://www.tei-
     } else if (row.type === 'empty' && row.el) {
       const newEl = oldEls2newEls.get(row.el);
 
-      if (currentParent) currentParent.appendChild(newEl as unknown as Node);
+      if (currentParent) currentParent.appendChild(newEl);
     } else if (row.type === 'text' && row.text) {
       textBuffer += row.text;
     }

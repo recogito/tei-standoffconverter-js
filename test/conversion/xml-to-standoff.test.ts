@@ -1,8 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { DOMParser } from '@xmldom/xmldom';
 import { xml2linearized } from '../../src/conversion';
-import type { Element } from '../../src/types';
-
 
 describe('xml2standoff', () => {
 
