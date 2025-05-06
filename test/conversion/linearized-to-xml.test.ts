@@ -4,7 +4,7 @@ import { linearized2xml } from '../../src/conversion';
 import type { MarkupToken } from '../../src/types';
 import { getChildren, getFirstElementChild } from '../../src/dom';
 
-describe('standoff2xml', () => {
+describe('linearized2xml', () => {
   const createDocument = () => new DOMParser().parseFromString('<root />', 'text/xml');
 
   it('should build a simple XML element', () => {
