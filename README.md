@@ -5,11 +5,11 @@ A JavaScript/TypeScript utility that bridges the gap between TEI/XML documents a
 This library creates a reversible mapping between TEI/XML markup and character offsets in plaintext, allowing you to apply text analysis tools to TEI documents without losing markup context.
 
 ```
-Original TEI: <p>This is a <hi>sample</hi> text.</p>
-Plaintext:    This is a sample text.
-                        ^----^
+TEI/XML:   <p>This is a <hi>sample</hi> text.</p>
+Plaintext: This is a sample text.
+                     ^----^
                      Identified entity
-Result:       <p>This is a <hi><placeName>sample</placeName></hi> text.</p>
+Result:    <p>This is a <hi><placeName>sample</placeName></hi> text.</p>
 ```
 
 The core logic was ported to TypeScript from the excellent Python [standoffconverter](https://github.com/standoff-nlp/standoffconverter) by [@millawell](https://github.com/millawell).
