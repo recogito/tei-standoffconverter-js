@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from 'uuid';
 import { doc, evaluateXPath, serializeXML } from '../dom';
 import { annotation2xml, linearized2xml, xml2annotation, xml2linearized } from '../conversion';
 import type { MarkupToken, StandoffAnnotation } from '../types';
@@ -259,6 +260,27 @@ export const createLinearizedTable = (el: Element, tokens: MarkupToken[], namesp
     }
   }
 
+  // Convenience method
+  const addStandOffTag = (standOffId: string, begin: number, end: number, tag: string) => {
+    const [startPath, startOffset] = query.getXPointer(begin).split('::');
+    const [endPath, endOffset] = query.getXPointer(end).split('::');
+
+    const annotation: StandoffAnnotation = {
+      id: uuidv4(),
+      start: {
+        path: startPath,
+        offset: parseInt(startOffset)
+      },
+      end: {
+        path: endPath, 
+        offset: parseInt(endOffset)
+      },
+      tags: [tag]
+    }
+
+    addAnnotation(standOffId, annotation);
+  }
+
   const xmlString = () => serializeXML(xml());
 
   return {
@@ -266,6 +288,7 @@ export const createLinearizedTable = (el: Element, tokens: MarkupToken[], namesp
     addAnnotation,
     addInline,
     addStandOff,
+    addStandOffTag,
     annotations,
     convertToInline,
     getCharacterOffset,

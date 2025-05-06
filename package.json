@@ -36,6 +36,7 @@
   },
   "dependencies": {
     "@xmldom/xmldom": "^0.9.8",
+    "uuid": "^11.1.0",
     "xpath": "^0.0.34"
   }
 }

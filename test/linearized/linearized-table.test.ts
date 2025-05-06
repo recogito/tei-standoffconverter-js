@@ -156,4 +156,33 @@ describe('createLinearizedTable', () => {
     expect(xmlStr).toContain('rs ana="tag"');
   });
 
+  it('should correctly create standoff tags from the helper', () => {
+    const doc = createDocument();
+    const tei = doc.createElement('TEI') as unknown as Element;
+    const teiHeader = doc.createElement('teiHeader') as unknown as Element;
+    const text = doc.createElement('text') as unknown as Element;
+
+    const tokens: MarkupToken[] = [
+      { type: 'open', position: 0, el: tei, depth: 0 },
+      { type: 'open', position: 0, el: teiHeader, depth: 1 },
+      { type: 'close', position: 0, el: teiHeader, depth: 1},
+      { type: 'open', position: 0, el: text, depth: 1},
+      { type: 'text', position: 0, el: null, text: 'Hello World!', depth: 1 },
+      { type: 'close', position: 12, el: text, depth: 1},
+      { type: 'close', position: 12, el: tei, depth: 0}
+    ]
+    
+    const table = createLinearizedTable(tei, tokens);
+
+    // Add new standOff block
+    table.addStandOff('standoff-1');
+    table.addStandOffTag('standoff-1', 2, 4, 'persName');
+
+    const xmlStr = table.xmlString();
+
+    expect(xmlStr).toContain('annotation xml:id="uid-');
+    expect(xmlStr).toContain('target="/text[1]::2 /text[1]::4"');
+    expect(xmlStr).toContain('rs ana="persName"');
+  });
+
 });
