@@ -2,34 +2,13 @@ import { describe, it, expect } from 'vitest';
 import { DOMParser } from '@xmldom/xmldom';
 import { parseXML } from '../../src';
 import { createLinearizedTable } from '../../src/linearized';
-import type { MarkupToken } from '../../src/types';
+import type { MarkupToken, StandoffAnnotation } from '../../src/types';
 
 describe('createLinearizedTable', () => {
   const createDocument = () => {
     const parser = new DOMParser();
     return parser.parseFromString('<!DOCTYPE html><body></body>', 'text/xml');
   } 
-
-  it('should correctly add inline elements', () => {
-    const doc = createDocument();
-    const root = doc.createElement('root') as unknown as Element;
-
-    const rows: MarkupToken[] = [
-      { type: 'open', position: 0, el: root, depth: 0 },
-      { type: 'text', position: 0, el: null, text: 'Hello, world!', depth: 0 },
-      { type: 'close', position: 13, el: root, depth: 0 }
-    ];
-
-    const table = createLinearizedTable(root, rows);
-
-    table.addInline(0, 5, 'childNode', { 'role': 'testing' });
-
-    expect(table.tokens.length).toBe(6);
-
-    const newRow = table.tokens.find(token => token.type === 'open' && (token.el as Element)?.tagName === 'childNode');
-    expect(newRow).toBeTruthy();
-    expect((newRow?.el as Element)?.getAttribute('role')).toBe('testing');
-  });
 
   it('should serialize to text correctly', () => {
     const doc = createDocument();
@@ -110,6 +89,71 @@ describe('createLinearizedTable', () => {
 
     const offset = parsed.getCharacterOffset('/TEI[1]/text[1]/body[1]/p[2]::5');
     expect(offset).toBe(151);
+  });
+
+  it('should correctly add inline elements', () => {
+    const doc = createDocument();
+    const root = doc.createElement('root') as unknown as Element;
+
+    const rows: MarkupToken[] = [
+      { type: 'open', position: 0, el: root, depth: 0 },
+      { type: 'text', position: 0, el: null, text: 'Hello, world!', depth: 0 },
+      { type: 'close', position: 13, el: root, depth: 0 }
+    ];
+
+    const table = createLinearizedTable(root, rows);
+
+    table.addInline(0, 5, 'childNode', { 'role': 'testing' });
+
+    expect(table.tokens.length).toBe(6);
+
+    const newRow = table.tokens.find(token => token.type === 'open' && (token.el as Element)?.tagName === 'childNode');
+    expect(newRow).toBeTruthy();
+    expect((newRow?.el as Element)?.getAttribute('role')).toBe('testing');
+  });
+
+  it('should correctly add standoff annotations', () => {
+    const doc = createDocument();
+    const tei = doc.createElement('TEI') as unknown as Element;
+    const teiHeader = doc.createElement('teiHeader') as unknown as Element;
+    const text = doc.createElement('text') as unknown as Element;
+
+    const tokens: MarkupToken[] = [
+      { type: 'open', position: 0, el: tei, depth: 0 },
+      { type: 'open', position: 0, el: teiHeader, depth: 1 },
+      { type: 'close', position: 0, el: teiHeader, depth: 1},
+      { type: 'open', position: 0, el: text, depth: 1},
+      { type: 'text', position: 0, el: null, text: 'Hello World!', depth: 1 },
+      { type: 'close', position: 12, el: text, depth: 1},
+      { type: 'close', position: 12, el: tei, depth: 0}
+    ]
+    
+    const table = createLinearizedTable(tei, tokens);
+
+    // Add new standOff block
+    table.addStandOff('standoff-1');
+
+    const annotation: StandoffAnnotation = {
+      id: 'fc2a0e90-dde4-4e38-8956-2930ec462116',
+      start: {
+        path: '//text[1]',
+        offset: 2,
+      },
+      end: {
+        path: '//text[1]',
+        offset: 4
+      },
+      tags: ['tag']
+    };
+
+    table.addAnnotation('standoff-1', annotation);
+
+    expect(table.tokens.length).toBe(15);
+
+    const xmlStr = table.xmlString();
+    expect(xmlStr).toContain('//text[1]::2');
+    expect(xmlStr).toContain('//text[1]::4');
+    expect(xmlStr).toContain('rs ana="tag"');
   });
 
 });

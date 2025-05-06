@@ -204,10 +204,12 @@ export const createLinearizedTable = (el: Element, tokens: MarkupToken[], namesp
       const headerClosed = findLastClosed('teiHeader');
       if (headerClosed) {
         // Insert after header
-        modify.insertOpen(headerClosed.position, standOffEl, headerClosed.depth);
-        modify.insertOpen(headerClosed.position, listAnnotationEl, headerClosed.depth + 1);
-        modify.insertClose(headerClosed.position, listAnnotationEl, headerClosed.depth + 1);
-        modify.insertClose(headerClosed.position, standOffEl, headerClosed.depth);
+        const insertAt = tokens.indexOf(headerClosed) + 1; 
+
+        modify.insertOpen(headerClosed.position, standOffEl, headerClosed.depth, insertAt);
+        modify.insertOpen(headerClosed.position, listAnnotationEl, headerClosed.depth + 1, insertAt + 1);
+        modify.insertClose(headerClosed.position, listAnnotationEl, headerClosed.depth + 1, insertAt + 2);
+        modify.insertClose(headerClosed.position, standOffEl, headerClosed.depth, insertAt + 3);
       }
     }
   }

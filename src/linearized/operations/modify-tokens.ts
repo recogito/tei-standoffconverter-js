@@ -50,7 +50,7 @@ export const createModifyOperations = (tokens: MarkupToken[]) => {
     tokens.splice(originalIndex, 1, newTokenBefore, newTokenAfter);
   }
 
-  const _insert = (type: MarkupTokenType, position: number, el: Element, depth: number) => {
+  const _insert = (type: MarkupTokenType, position: number, el: Element, depth: number, insertAt?: number) => {
     // 1. Ensure position exists (may split text if needed)
     if (!tokens.some(t => t.position === position)) 
       _splitStringAtPosition(position);
@@ -61,7 +61,8 @@ export const createModifyOperations = (tokens: MarkupToken[]) => {
       throw new Error('Failed to find insert position'); // Should never happen after split!
     
     // 3. Default insertion point: after all same-position rows
-    const insertIndex = tokens.indexOf(samePositionRows[samePositionRows.length - 1]);
+    let insertIndex = 
+      insertAt || tokens.indexOf(samePositionRows[samePositionRows.length - 1]);
 
     const newRow: MarkupToken = {
       position,
@@ -74,14 +75,14 @@ export const createModifyOperations = (tokens: MarkupToken[]) => {
     tokens.splice(insertIndex, 0, newRow);
   }
 
-  const insertOpen = (position: number, el: Element, depth: number) =>
-    _insert('open', position, el, depth);
+  const insertOpen = (position: number, el: Element, depth: number, insertAt?: number) =>
+    _insert('open', position, el, depth, insertAt);
 
-  const insertClose = (position: number, el: Element, depth: number) =>
-    _insert('close', position, el, depth);
+  const insertClose = (position: number, el: Element, depth: number, insertAt?: number) =>
+    _insert('close', position, el, depth, insertAt);
 
-  const insertEmpty = (position: number, el: Element, depth: number) =>
-    _insert('empty', position, el, depth);
+  const insertEmpty = (position: number, el: Element, depth: number, insertAt?: number) =>
+    _insert('empty', position, el, depth, insertAt);
 
   const removeToken = (el: Element) => {
     const indicesToRemove: number[] = [];
