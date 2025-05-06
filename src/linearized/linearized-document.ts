@@ -5,12 +5,16 @@ import { createModifyOperations, createQueryOperations } from './operations';
 
 export const createLinearizedTable = (el: Element, tokens: MarkupToken[], namespace = 'http://www.tei-c.org/ns/1.0') => {
 
+  const isCETEIcean = Boolean((el as any).dataset?.origname);
+
   const query = createQueryOperations(tokens);
 
   const modify = createModifyOperations(tokens);
 
   const _createElement = (tag: string, attrib?: Record<string, string>): Element => {
-    const el = doc.createElementNS(namespace, tag);
+    const el = isCETEIcean 
+      ? doc.createElementNS(namespace, `tei-${tag.toLowerCase()}`)
+      : doc.createElementNS(namespace, tag);
     
     if (attrib) {
       Object.entries(attrib).forEach(([key, value]) => {
@@ -20,6 +24,9 @@ export const createLinearizedTable = (el: Element, tokens: MarkupToken[], namesp
           el.setAttribute(key, value);
       });
     }
+
+    if (isCETEIcean)
+      el.setAttribute('data-origname', tag);
     
     return el as Element;
   }
@@ -132,10 +139,8 @@ export const createLinearizedTable = (el: Element, tokens: MarkupToken[], namesp
     if (isNaN(offset))
       throw new Error(`Invalid XPath offset: ${xpath}`);
 
-    const isCETEIcean = Boolean((el as any).dataset?.origname);
-
     const normalized = path.replace(/\/([^[/]+)/g, (_, p1) => {
-      return isCETEIcean ? '/tei-' + p1 : '/' + p1;
+      return isCETEIcean ? '/tei-' + p1.toLowerCase() : '/' + p1;
     }).replace(/xml:/g, '');
 
     const parentNode = evaluateXPath(normalized, el);
@@ -163,14 +168,50 @@ export const createLinearizedTable = (el: Element, tokens: MarkupToken[], namesp
     addInline(startOffset, endOffset, 'tei-note');
   }
 
+  const xml = () => {
+    const [el, _] = linearized2xml(tokens);
+    return el;
+  }
+
+  /** Recogito-specific utility functions */
   const annotations = (standOffId?: string) =>
     query.getAnnotations(standOffId)
       .filter(t => t.type === 'open' && t.el).map(t => t.el)
       .map(xml2annotation);
 
-  const xml = () => {
-    const [el, _] = linearized2xml(tokens);
-    return el;
+  const addStandOff = (id: string) => {
+    // Create new elements
+    const standOffEl = _createElement('standOff', { 'xml:id': id });
+    const listAnnotationEl = _createElement('listAnnotation');
+    standOffEl.appendChild(listAnnotationEl);
+
+    const findLastClosed = (tagName: String) => {
+      const closed = tokens.filter(t => {
+        if (t.type !== 'close') return; 
+        const n = (t.el as any)?.dataset?.origname || t.el?.tagName;
+        return n === tagName;
+      });
+
+      return (closed.length === 0) ? undefined : closed[closed.length - 1];
+    }
+
+    const standoffClosed = findLastClosed('standOff');
+    if (standoffClosed) {
+      // Insert after last standOff element
+      modify.insertOpen(standoffClosed.position, standOffEl, standoffClosed.depth);
+      modify.insertOpen(standoffClosed.position, listAnnotationEl, standoffClosed.depth + 1);
+      modify.insertClose(standoffClosed.position, listAnnotationEl, standoffClosed.depth + 1);
+      modify.insertClose(standoffClosed.position, standOffEl, standoffClosed.depth);
+    } else {
+      const headerClosed = findLastClosed('teiHeader');
+      if (headerClosed) {
+        // Insert after header
+        modify.insertOpen(headerClosed.position, standOffEl, headerClosed.depth);
+        modify.insertOpen(headerClosed.position, listAnnotationEl, headerClosed.depth + 1);
+        modify.insertClose(headerClosed.position, listAnnotationEl, headerClosed.depth + 1);
+        modify.insertClose(headerClosed.position, standOffEl, headerClosed.depth);
+      }
+    }
   }
 
   const addAnnotation = (annotation: StandoffAnnotation) => {
@@ -181,8 +222,9 @@ export const createLinearizedTable = (el: Element, tokens: MarkupToken[], namesp
 
   return {
     tokens: tokens,
-    annotations,
     addInline,
+    addStandOff,
+    annotations,
     convertToInline,
     getCharacterOffset,
     getXPointer: query.getXPointer,
