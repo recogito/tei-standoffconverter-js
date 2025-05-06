@@ -119,29 +119,28 @@ window.onload = async function () {
 };
 ```
 
-## API Reference
+## API
 
-### Core TEI Functions
+### Core Functions
 
 | Function | Description | Parameters | Return Value |
 |----------------|-------------|------------|--------------|
-| `parseXML(input)` | Parse TEI/XML | `input`: XML string, Element, or Document | `parsed` instance |
+| `parseXML(input)` | Parse TEI/XML | `input`: XML string or Element | `parsed` instance |
 | `parsed.text()` | Get plaintext | None | `string` |
-| `parsed.tokens` | Access linearized token array | Property | `Array` of token objects |
-| `parsed.xml()` | Get XML as DOM Element | None | `Element` |
-| `parsed.xmlString()` | Get XML as serialized string | None | `string` |
-| `parsed.getXPointer(offset)` | Convert character offset to XPointer | `offset`: number | `string` XPointer expression |
+| `parsed.tokens` | Access linearized token array | - | `Array` of token objects |
+| `parsed.getXPointer(offset)` | Convert plaintext character offset to XPointer | `offset`: number | `string` XPointer expression |
 | `parsed.getCharacterOffset(xpointer)` | Convert XPointer to character offset | `xpointer`: string | `number` |
 | `parsed.addInline(start, end, tagName, attrs)` | Insert inline tag at character positions | `start`: number<br>`end`: number<br>`tagName`: string<br>`attrs`: object | `void` |
-| `parsed.toXML()` | Serialize modified content to XML | None | `Element` or `Document` |
+| `parsed.xml()` | Get TEI/XML (DOM Element) | None | `Element` |
+| `parsed.xmlString()` | Get XML (serialized string) | None | `string` |
 
-### Recogito-Specific Annotation Functions
+### Recogito-Specific Functions
 
 | Function/Method | Description | Parameters | Return Value |
 |----------------|-------------|------------|--------------|
-| `parsed.annotations(standOffId?)` | Get standoff annotations from all or a specific TEI `<standOff>` element | `string` (optional) | `Array` of standoff annotation objects |
+| `parsed.annotations(standOffId?)` | Get standoff annotations from all or a specific TEI `<standOff>` element | `standOffId?`: string | `Array` of standoff annotation objects |
 | `parsed.addStandOff(id)` | Add a new TEI `<standOff>` element | `id`: string | `string` annotation ID |
-| `parsed.addAnnotation(annotation, standOffId)` | Add Recogito annotation | `annotation`: standoff annotation<br>`standOffId`: string | `void` |
+| `parsed.addAnnotation(annotation, standOffId)` | Add Recogito annotation to `standOff` element | `annotation`: standoff annotation<br>`standOffId`: string | `void` |
 
 ## TODO
 
