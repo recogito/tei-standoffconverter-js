@@ -1,8 +1,5 @@
-import { getChildren as _getChildren } from '../dom';
+import { getChildren } from '../dom';
 import type { StandoffAnnotation } from '../types';
-
-const getChildren = (el: Element, tagName: string) => 
-    _getChildren(el).filter(el => el.tagName === tagName || (el as any).dataset?.origname === tagName);
 
 export const xml2annotation = (el: Element): StandoffAnnotation => {
 

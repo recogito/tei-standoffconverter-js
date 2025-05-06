@@ -81,7 +81,7 @@ export { doc, Constants, evaluateXPath, parseXML, serializeXML };
  * DOM querying/manipulation utilities. Note that XMLDOM does not support 
  * any of the optional DOM interfaces, incl. `.children` and `.firstElementChild`.
  */
-export const getChildren = (node: Element): Element[] => {
+export const getChildren = (node: Element, tagName?: string): Element[] => {
   const children: Element[] = [];
   let child = node.firstChild;
 
@@ -92,7 +92,9 @@ export const getChildren = (node: Element): Element[] => {
     child = child.nextSibling;
   }
 
-  return children;
+  return tagName 
+    ? children.filter(c => c.tagName === tagName || (c as any).dataset?.origname === tagName)
+    : children;
 }
 
 export const getFirstElementChild = (el: Element): Element | null => {
