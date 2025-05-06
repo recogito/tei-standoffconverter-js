@@ -95,7 +95,11 @@ export const createLinearizedTable = (el: Element, tokens: MarkupToken[], namesp
     // Existing tag boundaries between begin and end
     const boundaries = query.getBoundaries(begin, end);
 
+
     const addSegment = (b: number, e: number, d?: number) => {
+      const text = query.getText(b, e);
+      if (!text.trim()) return;
+
       // Get parent context
       const parents = query.getParents(b, e, d);
       const newDepth = d ?? parents.length;
@@ -123,6 +127,8 @@ export const createLinearizedTable = (el: Element, tokens: MarkupToken[], namesp
     if (boundaries.length <= 2) { // Just the begin and end positions
       addSegment(begin, end);
     } else {
+      console.log('boundaries', boundaries);
+
       // Create segments based on boundaries
       const segments: { start: number; end: number }[] = [];
 

@@ -8,6 +8,8 @@ export const createQueryOperations = (tokens: MarkupToken[]) => {
     .map(t => t.text || '')
     .join('');
 
+  const getText = (from: number, to: number) => toText().substring(from, to);
+
   const toJSON = () => tokens
     .map(t => ({
       position: t.position,
@@ -219,6 +221,7 @@ export const createQueryOperations = (tokens: MarkupToken[]) => {
     getChildren,
     getParents,
     getParentsAtPos,
+    getText,
     getXPointer,
     toJSON,
     toText

@@ -64,6 +64,29 @@ export const createModifyOperations = (tokens: MarkupToken[]) => {
     let insertIndex = 
       insertAt || tokens.indexOf(samePositionRows[samePositionRows.length - 1]);
 
+    if (!insertAt) {
+      // Adjust insertIndex for depth
+      if (type === 'open' || type === 'empty' || type === 'text') {
+        insertIndex = samePositionRows.reduce<number>((idx, row) => {
+          if (row.depth > depth) {
+            // Insert before the deeper element
+            return tokens.indexOf(row);
+          } else {
+            return idx;
+          }
+        }, insertIndex);
+      } else if (type === 'close') {
+        insertIndex = samePositionRows.reduce<number>((idx, row) => {
+          if (row.depth < depth) {
+            // Insert before the shallower element
+            return tokens.indexOf(row);
+          } else {
+            return idx;
+          }
+        }, insertIndex);
+      }
+    }
+
     const newRow: MarkupToken = {
       position,
       type,
