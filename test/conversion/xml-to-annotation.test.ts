@@ -28,8 +28,6 @@ describe('xml2annotation', () => {
     
     const annotation = xml2annotation(element);
 
-    console.log(annotation);
-
     expect(annotation.id).toBe('ad2e62ab-64d8-43b1-9331-271e5390b9d6');
     expect(annotation.start.path).toBe('//text[@xml:id=\'text-1\']/body[1]/div[1]/p[4]/hi[1]');
     expect(annotation.start.offset).toBe(5);
