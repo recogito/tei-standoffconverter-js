@@ -22,7 +22,7 @@
       </sourceDesc>
     </fileDesc>
   </teiHeader>
-  <standOff type="recogito_studio_annotations">
+  <standOff type="recogito_studio_annotations" xml:id="standoff-1">
     <listAnnotation>
       <annotation target="//text[@xml:id='text-1']/body[1]/div[1]/p[4]/hi[1]::5 //text[@xml:id='text-1']/body[1]/div[1]/p[4]/hi[1]::15" xml:id="uid-ad2e62ab-64d8-43b1-9331-271e5390b9d6">
         <revisionDesc>

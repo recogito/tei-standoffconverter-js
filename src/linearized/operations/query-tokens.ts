@@ -120,11 +120,20 @@ export const createQueryOperations = (tokens: MarkupToken[]) => {
     return Array.from(children);
   }
 
-  const getAnnotations = () => tokens.filter(t => {
+  const getAnnotations = (standOffId?: string) => tokens.filter(t => {
     if (!t.el) return false;
     const el = (t.el as HTMLElement);
     const nodeName = el.dataset?.origname || el.tagName;
-    return nodeName.toLowerCase() === 'annotation';
+
+    if (nodeName.toLowerCase() !== 'annotation')
+      return false; 
+
+    if (standOffId) {
+      const parents = getParentsAtPos(t.position);
+      return parents.some(el => el.getAttribute('xml:id') === standOffId);
+    }
+
+    return true;
   });
 
   const getXPointer = (charOffset: number) => {

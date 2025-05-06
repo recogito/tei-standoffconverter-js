@@ -163,8 +163,8 @@ export const createLinearizedTable = (el: Element, tokens: MarkupToken[], namesp
     addInline(startOffset, endOffset, 'tei-note');
   }
 
-  const annotations = () =>
-    query.getAnnotations()
+  const annotations = (standOffId?: string) =>
+    query.getAnnotations(standOffId)
       .filter(t => t.type === 'open' && t.el).map(t => t.el)
       .map(xml2annotation);
 
