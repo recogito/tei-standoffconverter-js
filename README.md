@@ -22,7 +22,7 @@ npm install @recogito/standoff-converter
 
 ## Why?
 
-Text analysis (e.g. Named Entity Recognition) typically works with plaintext, but TEI/XML documents contain structured markup that gets lost when converting to plaintext. When these tools identify entities or other features at specific character positions, it's difficult to map those positions back to the original TEI structure.
+Text analysis tools (e.g. for Named Entity Recognition) typically work with plaintext only. However, TEI/XML documents contain rich structural markup that must be stripped away before processing. When analysis tools identify entities or features at specific character positions in the plaintext, it's hard to map those positions back to the original TEI markup structure.
 
 This library:
 - Creates a linearized representation that maintains the relationship between plaintext character positions and XML markup.
