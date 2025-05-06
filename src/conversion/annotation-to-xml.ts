@@ -1,5 +1,5 @@
 import type { StandoffAnnotation } from '../types';
 
-export const annotationToXML = (annotation: StandoffAnnotation) => {
+export const annotation2xml = (annotation: StandoffAnnotation) => {
   
 }

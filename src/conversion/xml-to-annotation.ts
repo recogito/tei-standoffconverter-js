@@ -2,9 +2,9 @@ import { getChildren as _getChildren } from '../dom';
 import type { StandoffAnnotation } from '../types';
 
 const getChildren = (el: Element, tagName: string) => 
-    _getChildren(el).filter(el => el.tagName === tagName || (el as any).dataset.origname === tagName);
+    _getChildren(el).filter(el => el.tagName === tagName || (el as any).dataset?.origname === tagName);
 
-export const xml2Annotation = (el: Element): StandoffAnnotation => {
+export const xml2annotation = (el: Element): StandoffAnnotation => {
 
   const xmlId = el.getAttribute('xml:id');
   const id = xmlId.startsWith('uid-') ? xmlId.substring(4) : xmlId;

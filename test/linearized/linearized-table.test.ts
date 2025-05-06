@@ -4,7 +4,7 @@ import { parseXML } from '../../src';
 import { createLinearizedTable } from '../../src/linearized';
 import type { MarkupToken } from '../../src/types';
 
-describe('StandoffTable', () => {
+describe('createLinearizedTable', () => {
   const createDocument = () => {
     const parser = new DOMParser();
     return parser.parseFromString('<!DOCTYPE html><body></body>', 'text/xml');
