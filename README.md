@@ -14,6 +14,8 @@ Result:    <p>This is a <hi><placeName>sample</placeName></hi> text.</p>
 
 The core logic was ported to TypeScript from the excellent Python [standoffconverter](https://github.com/standoff-nlp/standoffconverter) by [@millawell](https://github.com/millawell).
 
+## Installation
+
 ```sh
 npm install @recogito/standoff-converter
 ```
