@@ -120,6 +120,31 @@ export const createQueryOperations = (tokens: MarkupToken[]) => {
     return Array.from(children);
   }
 
+  const findByTagName = (tagName: string) => tokens.filter(t => {
+    const n = t.el?.getAttribute('data-origname') || t.el?.tagName;
+    return n === tagName;
+  });
+
+  const findNext = (rowIndex: number, tagName: string) => {
+    for (let i = rowIndex + 1; i < tokens.length; i++) {
+      const token = tokens[i];
+      const n = token.el?.getAttribute('data-origname') || token.el?.tagName;
+      if (n === tagName)
+        return token;
+    }
+    return null;
+  }
+
+  const findPrevious = (rowIndex: number, tagName: string) => {
+    for (let i = rowIndex - 1; i >= 0; i--) {
+      const token = tokens[i];
+      const n = token.el?.getAttribute('data-origname') || token.el?.tagName;
+      if (n === tagName)
+        return token;
+    }
+    return null;
+  }
+
   const getAnnotations = (standOffId?: string) => tokens.filter(t => {
     if (!t.el) return false;
     const el = (t.el as HTMLElement);
@@ -186,6 +211,9 @@ export const createQueryOperations = (tokens: MarkupToken[]) => {
   }
 
   return {
+    findByTagName,
+    findNext,
+    findPrevious,
     getAnnotations,
     getBoundaries,
     getChildren,

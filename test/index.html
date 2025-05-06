@@ -78,17 +78,27 @@
           // console.log('clipped:', plaintext.substring(startOffset, endOffset));
 
           // Highlight 'first Book'
-          parsed.addInline(startOffset + 21, startOffset + 26, 'tei-nOte', { role: 'highlighting' });
+          parsed.addInline(startOffset + 21, startOffset + 26, 'note', { role: 'highlighting' });
 
           // console.log(parsed.tokens);
 
           const annotations = parsed.annotations('standoff-1');
-          console.log(annotations);
+          // console.log(annotations);
 
-          parsed.addStandOff('standoff-foo');
+          parsed.addStandOff('standoff-new');
 
-          // parsed.removeInline(annotation);
-          // parsed.convertToInline(annotation);
+          parsed.addAnnotation('standoff-new', {
+            id: '2a64777b-7545-4392-8d63-e1e43dea8ec5',
+            start: {
+              path: '//text[@xml:id="text-1"]/body[1]/div[1]/p[4]/hi[1]',
+              offset: 5
+            },
+            end: {
+              path: '//text[@xml:id="text-1"]/body[1]/div[1]/p[4]/hi[1]', 
+              offset: 15
+            },
+            tags: ['placeName']
+          });
 
           const serialized = parsed.xml();
           document.getElementById('serialized').appendChild(serialized);

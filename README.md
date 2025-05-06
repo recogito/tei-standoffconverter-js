@@ -140,7 +140,7 @@ window.onload = async function () {
 |----------------|-------------|------------|--------------|
 | `parsed.annotations(standOffId?)` | Get standoff annotations from all or a specific TEI `<standOff>` element | `standOffId?`: string | `Array` of standoff annotation objects |
 | `parsed.addStandOff(id)` | Add a new TEI `<standOff>` element | `id`: string | `string` annotation ID |
-| `parsed.addAnnotation(annotation, standOffId)` | Add Recogito annotation to `standOff` element | `annotation`: standoff annotation<br>`standOffId`: string | `void` |
+| `parsed.addAnnotation(standOffId, annotation)` | Add Recogito annotation to `standOff` element | `standOffId`: string<br>`annotation`: standoff annotation | `void` |
 
 ## TODO
 

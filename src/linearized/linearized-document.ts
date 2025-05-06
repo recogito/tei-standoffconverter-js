@@ -1,5 +1,5 @@
 import { doc, evaluateXPath, serializeXML } from '../dom';
-import { linearized2xml, xml2annotation } from '../conversion';
+import { annotation2xml, linearized2xml, xml2annotation, xml2linearized } from '../conversion';
 import type { MarkupToken, StandoffAnnotation } from '../types';
 import { createModifyOperations, createQueryOperations } from './operations';
 
@@ -18,10 +18,13 @@ export const createLinearizedTable = (el: Element, tokens: MarkupToken[], namesp
     
     if (attrib) {
       Object.entries(attrib).forEach(([key, value]) => {
-        if (key === 'xml:id')
+        if (key === 'xml:id') {
+          el.id = value;
+          el.setAttribute('xml:id', value);
           el.setAttributeNS('http://www.w3.org/XML/1998/namespace', 'id', value);
-        else
+        } else {
           el.setAttribute(key, value);
+        }
       });
     }
 
@@ -185,16 +188,11 @@ export const createLinearizedTable = (el: Element, tokens: MarkupToken[], namesp
     const listAnnotationEl = _createElement('listAnnotation');
     standOffEl.appendChild(listAnnotationEl);
 
-    const findLastClosed = (tagName: String) => {
-      const closed = tokens.filter(t => {
-        if (t.type !== 'close') return; 
-        const n = (t.el as any)?.dataset?.origname || t.el?.tagName;
-        return n === tagName;
-      });
-
+    const findLastClosed = (tagName: string) => {
+      const closed = query.findByTagName(tagName).filter(t => t.type === 'close');
       return (closed.length === 0) ? undefined : closed[closed.length - 1];
     }
-
+  
     const standoffClosed = findLastClosed('standOff');
     if (standoffClosed) {
       // Insert after last standOff element
@@ -214,14 +212,56 @@ export const createLinearizedTable = (el: Element, tokens: MarkupToken[], namesp
     }
   }
 
-  const addAnnotation = (annotation: StandoffAnnotation) => {
-    
+  const addAnnotation = (standOffId: string, annotation: StandoffAnnotation) => {
+    const standOffClosed = query
+      .findByTagName('standOff')
+      .filter(t => t.type === 'close')
+      .filter(t => t.el?.getAttribute('xml:id') === standOffId)[0];
+
+    if (!standOffClosed) 
+      throw new Error(`No standOff element with id ${standOffId}`);
+
+    const annotationListToken = query.findPrevious(tokens.indexOf(standOffClosed), 'listAnnotation');
+    if (!annotationListToken)
+      throw new Error(`No annotation list found in standOff ${standOffId}`);
+
+    // Convert annotation
+    const annotationEl =  
+      annotation2xml(annotation, namespace, isCETEIcean ? 'tei-' : undefined); 
+
+    const annotationTokens = xml2linearized(annotationEl);
+
+    // Insert the annotation tokens
+    const insertPosition = annotationListToken.position;
+    const insertDepth = annotationListToken.depth! + 1;
+  
+    let currentPosition = insertPosition;
+    for (const token of annotationTokens) {
+      token.position = currentPosition;
+      token.depth = insertDepth;
+
+      // For text tokens, advance the position counter
+      if (token.type === 'text' && token.text)
+        currentPosition += token.text.length;
+
+      // Insert the token
+      tokens.splice(tokens.indexOf(annotationListToken), 0, token);
+    }
+
+    // Update positions of all tokens after the insertion
+    const insertedLength = currentPosition - insertPosition;
+    if (insertedLength > 0) {
+      for (let i = tokens.indexOf(standOffClosed) + annotationTokens.length; i < tokens.length; i++) {
+        tokens[i].position += insertedLength;
+      }
+    }
   }
 
   const xmlString = () => serializeXML(xml());
 
   return {
     tokens: tokens,
+    addAnnotation,
     addInline,
     addStandOff,
     annotations,

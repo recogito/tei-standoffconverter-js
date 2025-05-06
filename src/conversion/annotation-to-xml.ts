@@ -9,8 +9,17 @@ const startsWithNumber = (str: string) =>
 const isUUID = (str: string) =>
   /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/.test(str);
 
-export const annotation2xml = (annotation: StandoffAnnotation) => {
-  const annotationEl = doc.createElement('annotation');
+export const annotation2xml = (
+  annotation: StandoffAnnotation, 
+  namespace = 'http://www.tei-c.org/ns/1.0',
+  ceteiceanPrefix?: string
+) => {
+  // Shorthand
+  const _createElement = (tagName: string) => ceteiceanPrefix 
+      ? doc.createElementNS(namespace, `${ceteiceanPrefix}${tagName}`)
+      : doc.createElementNS(namespace, tagName);
+
+  const annotationEl = _createElement('annotation');
 
   // XML-safe ID
   const shouldPrefix = startsWithNumber(annotation.id) || isUUID(annotation.id);
@@ -24,9 +33,9 @@ export const annotation2xml = (annotation: StandoffAnnotation) => {
 
   // Tags
   (annotation.tags || []).forEach(tag => {
-    const rs = doc.createElement('rs');
-    rs.setAttribute('ana', tag);
-    annotationEl.appendChild(rs);
+    const rsEl = _createElement('rs')
+    rsEl.setAttribute('ana', tag);
+    annotationEl.appendChild(rsEl);
   });
 
   return annotationEl;

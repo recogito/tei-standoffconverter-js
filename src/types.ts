@@ -10,10 +10,6 @@ export interface MarkupToken {
 
   text?: string | null;
 
-  serializeAs?: SerializationMode;
-
-  standOffId?: string;
-
 }
 
 export type MarkupTokenType = 'open' | 'close' | 'text' | 'empty';
