@@ -143,10 +143,9 @@ window.onload = async function () {
 | `parsed.addAnnotation(standOffId, annotation)` | Add Recogito annotation to `standOff` element | `standOffId`: string<br>`annotation`: standoff annotation | `void` |
 | `parsed.addStandOffTag(standOffId, start, end, tag)` | Add Recogito annotation to `standOff` element that represents a simple (NER) tag | `standOffId`: string<br>`start`: number<br>`end`: number<br>`tag`: string<br> | `void` |
 
-## TODO
+## Known Issues
 
-- **Handle existing standoff elements**. Currently, this library parses the markup only, but ignores `<standOff>` blocks in the TEI. Therefore, annotation offsets in existing standOff elements will break if the TEI is modified. We would need to parse the standOff elements, too, and incorprate them into the standoff map, in order to keep standoff pointers in sync with the TEI document.
-
+- **standOff Anchors and inline markup modifications**. Using `.addInline` will change the TEI markup. This has the potential to break XPath anchors for annotations in `<standOff>` blocks. In order to prevent this, we would need to do before/after checks for affected anchors, and update them accordingly, so that they remain in sync with the changed TEI document.
 
 
 
