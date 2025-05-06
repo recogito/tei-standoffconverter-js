@@ -1,6 +1,8 @@
 # Recogito TEI/XML Standoff Converter
 
-A JavaScript/TypeScript utility that bridges the gap between TEI/XML documents and plaintext processing tools. This library creates a reversible mapping between TEI/XML markup and character offsets in plaintext, allowing you to apply text analysis tools to TEI documents without losing markup context.
+A JavaScript/TypeScript utility that bridges the gap between TEI/XML documents and plaintext processing tools. 
+
+This library creates a reversible mapping between TEI/XML markup and character offsets in plaintext, allowing you to apply text analysis tools to TEI documents without losing markup context.
 
 ```
 Original TEI: <p>This is a <hi>sample</hi> text.</p>
