@@ -28,7 +28,7 @@ This library:
 - Creates a linearized representation that maintains the relationship between plaintext character positions and XML markup.
 - Allows you to process the plaintext with any text analysis tool.
 - Maps the identified features back to the exact location in the original XML.
-- Modifies the TEI/XML structure while preserving all existing markup.
+- Allows you to modify the TEI/XML structure while preserving all existing markup.
 
 Perfect for enriching TEI documents with automatically extracted entities, annotations, or other textual features!
 
