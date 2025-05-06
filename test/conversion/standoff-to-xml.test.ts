@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { DOMParser } from '@xmldom/xmldom';
 import { linearized2xml } from '../../src/conversion';
 import type { MarkupToken } from '../../src/types';
-import { getChildren, getFirstElementChild } from 'src/utils';
+import { getChildren, getFirstElementChild } from '../../src/dom';
 
 describe('standoff2xml', () => {
   const createDocument = () => new DOMParser().parseFromString('<root />', 'text/xml');
@@ -38,7 +38,7 @@ describe('standoff2xml', () => {
 
     const [result] = linearized2xml(rows);
 
-    const firstElementChild = getFirstElementChild(result as unknown as Node);
+    const firstElementChild = getFirstElementChild(result as Element);
 
     expect(result?.tagName).toBe('root');
     expect(firstElementChild?.tagName).toBe('child');
@@ -77,7 +77,7 @@ describe('standoff2xml', () => {
 
     const [result] = linearized2xml(rows);
     
-    const children = getChildren(result as unknown as Node);
+    const children = getChildren(result as Element);
 
     expect(result?.tagName).toBe('root');
     expect(children[0]?.tagName).toBe('empty');

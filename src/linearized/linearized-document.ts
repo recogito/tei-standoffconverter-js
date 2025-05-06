@@ -1,5 +1,5 @@
 import { doc, evaluateXPath, serializeXML } from '../dom';
-import { linearized2xml, parseAnnotation } from '../conversion';
+import { linearized2xml, xml2Annotation } from '../conversion';
 import type { MarkupToken, StandoffAnnotation } from '../types';
 import { createModifyOperations, createQueryOperations } from './operations';
 
@@ -166,7 +166,7 @@ export const createLinearizedTable = (el: Element, tokens: MarkupToken[], namesp
   const annotations = () =>
     query.getAnnotations()
       .filter(t => t.type === 'open' && t.el).map(t => t.el)
-      .map(parseAnnotation);
+      .map(xml2Annotation);
 
   const xml = () => {
     const [el, _] = linearized2xml(tokens);

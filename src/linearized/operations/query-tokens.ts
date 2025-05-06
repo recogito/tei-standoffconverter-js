@@ -1,35 +1,35 @@
 import { Constants } from '../../dom';
 import type { MarkupToken } from '../../types';
 
-export const createQueryOperations = (rows: MarkupToken[]) => {
+export const createQueryOperations = (tokens: MarkupToken[]) => {
 
-  const toText = () => rows
-    .filter(row => row.type === 'text' && row.text)
-    .map(row => row.text || '')
+  const toText = () => tokens
+    .filter(t => t.type === 'text' && t.text)
+    .map(t => t.text || '')
     .join('');
 
-  const toJSON = () => rows
-    .map(row => ({
-      position: row.position,
-      type: row.type,
-      tag: row.el?.tagName,
+  const toJSON = () => tokens
+    .map(t => ({
+      position: t.position,
+      type: t.type,
+      tag: t.el?.tagName,
       // attributes: TODO!
-      depth: row.depth,
-      text: row.text
+      depth: t.depth,
+      text: t.text
     }));
 
   // Returns an array of parent elements at the given position
   const getParentsAtPos = (position: number): Element[] => {
-    const rowsBefore = rows.filter(row => row.position <= position);
+    const tokensBefore = tokens.filter(t => t.position <= position);
     
     const stack: Element[] = [];
 
-    for (const row of rowsBefore) {
-      if (row.type === 'open' && row.el) {
-        stack.push(row.el);
-      } else if (row.type === 'close' && row.el) {
+    for (const token of tokensBefore) {
+      if (token.type === 'open' && token.el) {
+        stack.push(token.el);
+      } else if (token.type === 'close' && token.el) {
         // Remove the element if it's in the stack
-        const index = stack.findIndex(el => el === row.el);
+        const index = stack.findIndex(el => el === token.el);
         if (index !== -1) {
           stack.splice(index, 1);
         }
@@ -44,12 +44,12 @@ export const createQueryOperations = (rows: MarkupToken[]) => {
     const boundaries = new Set<number>([begin, end]);
     
     // Find all tag boundaries between begin and end
-    rows.forEach(row => {
+    tokens.forEach(t => {
       // Only consider open and close tags
-      if ((row.type === 'open' || row.type === 'close') && 
-          row.position > begin && 
-          row.position < end) {
-        boundaries.add(row.position);
+      if ((t.type === 'open' || t.type === 'close') && 
+          t.position > begin && 
+          t.position < end) {
+        boundaries.add(t.position);
       }
     });
     
@@ -82,18 +82,18 @@ export const createQueryOperations = (rows: MarkupToken[]) => {
     // Find index in table for the begin position
     let beginIdx: number;
 
-    const posExists = rows.some(row => row.position === begin);
+    const posExists = tokens.some(t => t.position === begin);
     if (!posExists) {
       // Find the last text row before this position
-      const slice = rows.filter(row => 
-        row.position < begin && row.type === 'text'
+      const slice = tokens.filter(t => 
+        t.position < begin && t.type === 'text'
       );
-      beginIdx = slice.length ? rows.indexOf(slice[slice.length - 1]) : 0;
+      beginIdx = slice.length ? tokens.indexOf(slice[slice.length - 1]) : 0;
     } else {
-      const matches = rows.filter(row => 
-        row.position === begin && row.type === 'text'
+      const matches = tokens.filter(t => 
+        t.position === begin && t.type === 'text'
       );
-      beginIdx = matches.length ? rows.indexOf(matches[0]) : 0;
+      beginIdx = matches.length ? tokens.indexOf(matches[0]) : 0;
     }
     
     // Find children
@@ -102,8 +102,8 @@ export const createQueryOperations = (rows: MarkupToken[]) => {
     let cRowPos = begin;
     let cRowIdx = beginIdx;
     
-    while (cRowPos <= end && cRowIdx < rows.length) {
-      const cRow = rows[cRowIdx];
+    while (cRowPos <= end && cRowIdx < tokens.length) {
+      const cRow = tokens[cRowIdx];
       cRowPos = cRow.position;
       
       if (cRow.type === 'open' && cRow.el) {
@@ -120,9 +120,9 @@ export const createQueryOperations = (rows: MarkupToken[]) => {
     return Array.from(children);
   }
 
-  const getAnnotations = () => rows.filter(row => {
-    if (!row.el) return false;
-    const el = (row.el as HTMLElement);
+  const getAnnotations = () => tokens.filter(t => {
+    if (!t.el) return false;
+    const el = (t.el as HTMLElement);
     const nodeName = el.dataset?.origname || el.tagName;
     return nodeName.toLowerCase() === 'annotation';
   });
@@ -166,7 +166,7 @@ export const createQueryOperations = (rows: MarkupToken[]) => {
       return segments;
     }
 
-    const parents = rows.filter(row => row.position <= charOffset && row.type === 'open');
+    const parents = tokens.filter(t => t.position <= charOffset && t.type === 'open');
     if (parents.length === 0)
       throw new Error(`Invalid offset: ${charOffset}`);
 

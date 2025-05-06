@@ -1,6 +1,9 @@
-import { Node, DOMParser as NodeDOMParser } from '@xmldom/xmldom';
 import xpath from 'xpath';
+import { Node, DOMParser as NodeDOMParser } from '@xmldom/xmldom';
 
+/**
+ * Provides browser-vs.-Node abstractions.
+ */
 let doc: Document;
 
 let Constants: { 
@@ -73,3 +76,34 @@ if (typeof document !== 'undefined') {
 }
 
 export { doc, Constants, evaluateXPath, parseXML, serializeXML };
+
+/**
+ * DOM querying/manipulation utilities. Note that XMLDOM does not support 
+ * any of the optional DOM interfaces, incl. `.children` and `.firstElementChild`.
+ */
+export const getChildren = (node: Element): Element[] => {
+  const children: Element[] = [];
+  let child = node.firstChild;
+
+  while (child) {
+    if (child.nodeType === Constants.ELEMENT_NODE) {
+      children.push(child as unknown as Element);
+    }
+    child = child.nextSibling;
+  }
+
+  return children;
+}
+
+export const getFirstElementChild = (el: Element): Element | null => {
+  let child = el.firstChild;
+
+  while (child) {
+    if (child.nodeType === Constants.ELEMENT_NODE) {
+      return child as unknown as Element;
+    }
+    child = child.nextSibling;
+  }
+
+  return null;
+}
