@@ -7,7 +7,7 @@ This library creates a reversible mapping between TEI/XML markup and character o
 ```
 Original TEI: <p>This is a <hi>sample</hi> text.</p>
 Plaintext:    This is a sample text.
-                      ^-----^
+                        ^----^
                      Identified entity
 Result:       <p>This is a <hi><placeName>sample</placeName></hi> text.</p>
 ```
