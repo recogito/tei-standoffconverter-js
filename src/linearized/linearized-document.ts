@@ -200,16 +200,16 @@ export const createLinearizedTable = (el: Element, tokens: MarkupToken[], namesp
     const standoffClosed = findLastClosed('standOff');
     if (standoffClosed) {
       // Insert after last standOff element
-      modify.insertOpen(standoffClosed.position, standOffEl, standoffClosed.depth);
-      modify.insertOpen(standoffClosed.position, listAnnotationEl, standoffClosed.depth + 1);
-      modify.insertClose(standoffClosed.position, listAnnotationEl, standoffClosed.depth + 1);
-      modify.insertClose(standoffClosed.position, standOffEl, standoffClosed.depth);
+      const insertAt = tokens.indexOf(standoffClosed) + 1;
+      modify.insertOpen(standoffClosed.position, standOffEl, standoffClosed.depth, insertAt);
+      modify.insertOpen(standoffClosed.position, listAnnotationEl, standoffClosed.depth + 1, insertAt + 1);
+      modify.insertClose(standoffClosed.position, listAnnotationEl, standoffClosed.depth + 1, insertAt + 2);
+      modify.insertClose(standoffClosed.position, standOffEl, standoffClosed.depth, insertAt + 3);
     } else {
       const headerClosed = findLastClosed('teiHeader');
       if (headerClosed) {
         // Insert after header
         const insertAt = tokens.indexOf(headerClosed) + 1; 
-
         modify.insertOpen(headerClosed.position, standOffEl, headerClosed.depth, insertAt);
         modify.insertOpen(headerClosed.position, listAnnotationEl, headerClosed.depth + 1, insertAt + 1);
         modify.insertClose(headerClosed.position, listAnnotationEl, headerClosed.depth + 1, insertAt + 2);

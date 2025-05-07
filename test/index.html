@@ -67,27 +67,24 @@
           // Get XPointer expression for 'first Book'
           const start = parsed.getXPointer(555);
           const end = parsed.getXPointer(565);
-          // console.log({ start, end });
+          console.log({ start, end });
 
           const startOffset = parsed.getCharacterOffset("//text[@xml:id='text-1']/body[1]/div[1]/p[4]/hi[1]::5");
           const endOffset = parsed.getCharacterOffset("//text[@xml:id='text-1']/body[1]/div[1]/p[4]/hi[1]::15");
+          console.log({ startOffset, endOffset });
 
           const plaintext = parsed.text();
-          // console.log({ startOffset, endOffset });
+          console.log('clipped:', plaintext.substring(startOffset, endOffset));
 
-          // console.log('clipped:', plaintext.substring(startOffset, endOffset));
-
-          // Highlight 'first Book'
+          // Highlight 'first' 
           parsed.addInline(startOffset + 21, startOffset + 26, 'note', { role: 'highlighting' });
 
-          // console.log(parsed.tokens);
-
-          const annotations = parsed.annotations('standoff-1');
+          // const annotations = parsed.annotations('standoff-1');
           // console.log(annotations);
 
-          parsed.addStandOff('standoff-new');
+          parsed.addStandOff('standoff-2');
 
-          parsed.addAnnotation('standoff-new', {
+          parsed.addAnnotation('standoff-2', {
             id: '2a64777b-7545-4392-8d63-e1e43dea8ec5',
             start: {
               path: '//text[@xml:id="text-1"]/body[1]/div[1]/p[4]/hi[1]',
