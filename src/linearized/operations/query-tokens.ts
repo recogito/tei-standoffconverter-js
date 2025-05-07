@@ -108,7 +108,7 @@ export const createQueryOperations = (tokens: MarkupToken[]) => {
       const cRow = tokens[cRowIdx];
       cRowPos = cRow.position;
       
-      if (cRow.type === 'open' && cRow.el) {
+      if (cRow.type === 'open' && cRow.el && cRow.depth > depth) {
         cache.add(cRow.el);
       }
       

@@ -90,6 +90,7 @@ describe('createLinearizedTable', () => {
     const offset = parsed.getCharacterOffset('/TEI[1]/text[1]/body[1]/p[2]::5');
     expect(offset).toBe(151);
   });
+  
 
   it('should correctly add inline elements', () => {
     const doc = createDocument();
@@ -110,6 +111,92 @@ describe('createLinearizedTable', () => {
     const newRow = table.tokens.find(token => token.type === 'open' && (token.el as Element)?.tagName === 'childNode');
     expect(newRow).toBeTruthy();
     expect((newRow?.el as Element)?.getAttribute('role')).toBe('testing');
+  });
+
+  it('should correctly add inline elements at tag boundaries', () => {
+    const xml = `
+      <TEI xmlns="http://www.tei-c.org/ns/1.0">
+        <teiHeader>
+          <fileDesc>
+            <titleStmt>
+              <title>Untitled Text</title>
+            </titleStmt>
+            <publicationStmt>
+              <p>Unpublished</p>
+            </publicationStmt>
+            <sourceDesc>
+              <p>Plain text input</p>
+            </sourceDesc>
+          </fileDesc>
+        </teiHeader>
+        <text>
+          <body>
+            <p>The victory at Saratoga proved especially significant because it helped persuade the French
+              to form an alliance with the United States. The treaty of alliance, brokered by Franklin and
+              signed in early 1778, brought much-needed financial help from France to the war effort,
+              along with the promise of military aid. But despite the important victory won by General
+              Gates to the north, Washington continued to struggle against the main British army.</p>
+            <p>A painting shows George Washington standing on a promontory above the Hudson River wearing
+              a military coat and holding a tricorner hat and sword in his hand. Just behind Washington
+              his slave William</p>
+            <p>John Trumbull painted this wartime image of Washington on a promontory above the Hudson
+              River. Washington’s enslaved valet William “Billy” Lee stands behind him and British
+              warships fire on a U.S. fort in the background. Lee rode alongside Washington for the
+              duration of the Revolutionary War.</p>
+            <p>For Washington, 1777 was dispiriting in that he failed to win any grand successes. The
+              major battles came in the fall, when the British army sailed from New York and worked its
+              way up the Chesapeake Bay, aiming to capture Philadelphia, the seat of American power where
+              the Continental Congress met. Washington tried to stop the British, fighting at Brandywine
+              Bridge and Germantown in September and October. He lost both battles, and the defeat at
+              Germantown was especially severe. The British easily seized Philadelphia—a victory, even
+              though Congress had long since left the capital and reconvened in nearby Lancaster and York.
+              The demoralized Continentals straggled to a winter camp at Valley Forge, where few supplies 
+              reached them, and Washington grew frustrated that the states were not meeting congressional 
+              requisitions of provisions for the troops. Sickness incapacitated the undernourished soldiers. 
+              Many walked through the snow barefoot, leaving bloody footprints behind. (See the Joseph Plumb 
+              Martin The Adventures of a Revolutionary Soldier 1777 Primary Source.)</p>
+          </body>
+        </text>
+      </TEI>`;
+
+    const parsed = parseXML(xml);
+
+    // 'John Trumbull'
+    expect(parsed.text().substring(989, 1002)).toBe('John Trumbull');
+
+    parsed.addInline(988, 1002, 'persName');
+
+    // Debug logging
+    // console.log(parsed.xmlString());
+    // const idxOf = (t: MarkupToken) => parsed.tokens.indexOf(t)
+    // console.log(parsed.tokens.map(t => ({ i: idxOf(t), pos: t.position, name: t.el?.tagName, type: t.type, depth: t.depth })))
+
+    const tokensToVerify = parsed.tokens.filter(t => t.el && t.position >= 988 && t.position <= 1324);
+    // console.log(tokensToVerify.map(t => ({ i: idxOf(t), pos: t.position, name: t.el?.tagName, type: t.type, depth: t.depth })))
+
+    expect(tokensToVerify[0].position).toBe(988);
+    expect(tokensToVerify[0].el.tagName).toBe('persName');
+    expect(tokensToVerify[0].type).toBe('open');
+
+    expect(tokensToVerify[1].position).toBe(989);
+    expect(tokensToVerify[1].el.tagName).toBe('persName');
+    expect(tokensToVerify[1].type).toBe('close');
+
+    expect(tokensToVerify[2].position).toBe(989);
+    expect(tokensToVerify[2].el.tagName).toBe('p');
+    expect(tokensToVerify[2].type).toBe('open');
+
+    expect(tokensToVerify[3].position).toBe(989);
+    expect(tokensToVerify[3].el.tagName).toBe('persName');
+    expect(tokensToVerify[3].type).toBe('open');
+
+    expect(tokensToVerify[4].position).toBe(1002);
+    expect(tokensToVerify[4].el.tagName).toBe('persName');
+    expect(tokensToVerify[4].type).toBe('close');
+
+    expect(tokensToVerify[5].position).toBe(1324);
+    expect(tokensToVerify[5].el.tagName).toBe('p');
+    expect(tokensToVerify[5].type).toBe('close');
   });
 
   it('should correctly add standoff annotations', () => {

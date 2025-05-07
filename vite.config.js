@@ -26,7 +26,8 @@ export default defineConfig({
       output: {
         globals: {
           '@xmldom/xmldom': '@xmldom/xmldom',
-          'xpath': 'xpath'
+          'xpath': 'xpath',
+          'uuid': 'uuid'
         }
       }
     }

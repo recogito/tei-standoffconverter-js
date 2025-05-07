@@ -67,21 +67,21 @@ export const createModifyOperations = (tokens: MarkupToken[]) => {
     if (!insertAt) {
       // Adjust insertIndex for depth
       if (type === 'open' || type === 'empty' || type === 'text') {
-        insertIndex = samePositionRows.reduce<number>((idx, row) => {
-          if (row.depth > depth) {
+        insertIndex = samePositionRows.reduce<number>((adjustedIdx, row) => {
+          if (row.depth && row.depth > depth) {
             // Insert before the deeper element
-            return tokens.indexOf(row);
+            return tokens.indexOf(row) - 1;
           } else {
-            return idx;
+            return adjustedIdx;
           }
         }, insertIndex);
       } else if (type === 'close') {
-        insertIndex = samePositionRows.reduce<number>((idx, row) => {
-          if (row.depth < depth) {
+        insertIndex = samePositionRows.reduce<number>((adjustedIdx, row, idx) => {
+          if (row.depth && row.depth <= depth) {
             // Insert before the shallower element
-            return tokens.indexOf(row);
+            return idx > 0 ? tokens.indexOf(row) - 1 : tokens.indexOf(row);
           } else {
-            return idx;
+            return adjustedIdx;
           }
         }, insertIndex);
       }
