@@ -147,6 +147,11 @@ export const createQueryOperations = (tokens: MarkupToken[]) => {
     return null;
   }
 
+  const findLastClosed = (tagName: string) => {
+    const closed = findByTagName(tagName).filter(t => t.type === 'close');
+    return (closed.length === 0) ? undefined : closed[closed.length - 1];
+  }
+
   const getAnnotations = (standOffId?: string) => tokens.filter(t => {
     if (!t.el) return false;
     const el = (t.el as HTMLElement);
@@ -214,6 +219,7 @@ export const createQueryOperations = (tokens: MarkupToken[]) => {
 
   return {
     findByTagName,
+    findLastClosed,
     findNext,
     findPrevious,
     getAnnotations,

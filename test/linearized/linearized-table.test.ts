@@ -243,6 +243,39 @@ describe('createLinearizedTable', () => {
     expect(xmlStr).toContain('rs ana="tag"');
   });
 
+  it('should correctly insert taxonomy elements', () => {
+    const xml1 = `
+      <TEI xmlns="http://www.tei-c.org/ns/1.0">
+      </TEI>
+    `;
+
+    const parsed1 = parseXML(xml1);
+    parsed1.addTaxonomy('taxonomy-1');
+    
+    const expected1 = '<teiHeader><encodingDesc><classDecl><taxonomy xml:id="taxonomy-1"/></classDecl></encodingDesc></teiHeader>';
+    expect(parsed1.xmlString()).toContain(expected1);
+
+    const xml2 = `
+      <TEI xmlns="http://www.tei-c.org/ns/1.0">
+        <teiHeader>
+          <encodingDesc>
+            <p>encodingDesc</p>
+            <classDecl>
+              <taxonomy xml:id="existing-taxonomy">
+              </taxonomy>
+            </classDecl>
+          </encodingDesc>
+        </teiHeader>
+      </TEI>
+    `;
+
+    const parsed2 = parseXML(xml2);
+    parsed2.addTaxonomy('taxonomy-2');
+
+    const expected2 = '<encodingDesc><p>encodingDesc</p><classDecl><taxonomy xml:id="existing-taxonomy"></taxonomy><taxonomy xml:id="taxonomy-2"/></classDecl></encodingDesc>';
+    expect(parsed2.xmlString().replace(/>\s+</g, '><')).toContain(expected2);
+  });
+
   it('should correctly create standoff tags from the helper', () => {
     const doc = createDocument();
     const tei = doc.createElement('TEI') as unknown as Element;

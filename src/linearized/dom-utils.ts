@@ -13,9 +13,10 @@ export const createDOMUtils = (el: Element, tokens: MarkupToken[], namespace: st
     if (attrib) {
       Object.entries(attrib).forEach(([key, value]) => {
         if (key === 'xml:id') {
-          el.id = value;
+          if (isCETEIcean)
+            el.id = value;
+
           el.setAttribute('xml:id', value);
-          el.setAttributeNS('http://www.w3.org/XML/1998/namespace', 'id', value);
         } else {
           el.setAttribute(key, value);
         }
@@ -27,20 +28,10 @@ export const createDOMUtils = (el: Element, tokens: MarkupToken[], namespace: st
     
     return el as Element;
   }
-  
-  const addTaxonomy = (id: string) => {
-
-  }
-
-  const upsertTaxonomyCategory = (taxonomyId: string, categoryId: string, categoryLabel: string) => {
-
-  } 
 
   return {
     isCETEIcean,
-    addTaxonomy,
-    createElement,
-    upsertTaxonomyCategory
+    createElement
   }
 
 }

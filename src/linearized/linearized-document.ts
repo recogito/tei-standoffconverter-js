@@ -168,12 +168,7 @@ export const createLinearizedTable = (el: Element, tokens: MarkupToken[], namesp
     const listAnnotationEl = dom.createElement('listAnnotation');
     standOffEl.appendChild(listAnnotationEl);
 
-    const findLastClosed = (tagName: string) => {
-      const closed = query.findByTagName(tagName).filter(t => t.type === 'close');
-      return (closed.length === 0) ? undefined : closed[closed.length - 1];
-    }
-  
-    const standoffClosed = findLastClosed('standOff');
+    const standoffClosed = query.findLastClosed('standOff');
     if (standoffClosed) {
       // Insert after last standOff element
       const insertAt = tokens.indexOf(standoffClosed) + 1;
@@ -182,7 +177,7 @@ export const createLinearizedTable = (el: Element, tokens: MarkupToken[], namesp
       modify.insertClose(standoffClosed.position, listAnnotationEl, standoffClosed.depth + 1, insertAt + 2);
       modify.insertClose(standoffClosed.position, standOffEl, standoffClosed.depth, insertAt + 3);
     } else {
-      const headerClosed = findLastClosed('teiHeader');
+      const headerClosed = query.findLastClosed('teiHeader');
       if (headerClosed) {
         // Insert after header
         const insertAt = tokens.indexOf(headerClosed) + 1; 
@@ -193,6 +188,55 @@ export const createLinearizedTable = (el: Element, tokens: MarkupToken[], namesp
       }
     }
   }
+
+  // Note: taxonomy is a child of TEI > teiHeader > encodingDesc > classDecl
+  const addTaxonomy = (id: string) => {
+    // DOM manipulation helpers
+    const getOpen = (tagName: string, start = 0) =>
+      tokens.slice(start).find(t => t.el?.tagName === tagName && t.type === 'open');
+
+    const getClose = (tagName: string, start = 0) =>
+      tokens.slice(start).find(t => t.el?.tagName === tagName && t.type === 'close');
+
+    const hasTag = (tagName: string, start = 0) =>
+      tokens.slice(start).find(t => t.el?.tagName === tagName);
+
+    const createTag = (offset: number) => (token: MarkupToken, tagName: string, attr: Record<string, string> = {}) => {
+      const tagEl = dom.createElement(tagName, attr);
+
+      const insertAt = tokens.indexOf(token) + offset;
+
+      modify.insertOpen(token.position, tagEl, token.depth + 1, insertAt);
+      modify.insertClose(token.position, tagEl, token.depth + 1, insertAt + 1);
+    }
+
+    const createTagBefore = createTag(0);
+    const createTagAfter = createTag(1);
+
+    // Insert teiHeader if it doesn't exist
+    if (!hasTag('teiHeader'))
+      createTagAfter(getOpen('TEI'), 'teiHeader');
+
+    const teiHeader = getOpen('teiHeader');
+
+    // Insert encodingDesc if it doesn't exist
+    if (!hasTag('encodingDesc', tokens.indexOf(teiHeader)))
+      createTagAfter(teiHeader, 'encodingDesc');
+
+    const encodingDesc = getOpen('encodingDesc', tokens.indexOf(teiHeader));
+
+    // Insert classDecl if it doesn't exist
+    if (!hasTag('classDecl', tokens.indexOf(encodingDesc))) {
+      createTagAfter(encodingDesc, 'classDecl');
+    }
+
+    const classDecl = getClose('classDecl', tokens.indexOf(encodingDesc));
+    createTagBefore(classDecl, 'taxonomy', { 'xml:id': id });
+  }
+
+  const upsertTaxonomyCategory = (taxonomyId: string, categoryId: string, categoryLabel: string) => {
+
+  } 
 
   const addAnnotation = (standOffId: string, annotation: StandoffAnnotation) => {
     const standOffClosed = query
@@ -270,6 +314,7 @@ export const createLinearizedTable = (el: Element, tokens: MarkupToken[], namesp
     addInline,
     addStandOff,
     addStandOffTag,
+    addTaxonomy,
     annotations,
     convertToInline,
     getCharacterOffset,
