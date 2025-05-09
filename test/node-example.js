@@ -11,7 +11,7 @@ const plaintext = parsed.text();
 console.log(`Creating tag on: '${plaintext.substring(start, end)}'`);
 
 parsed.addStandOff('standoff-2');
-parsed.addStandOffTag('standoff-2', start, end, 'persName');
+parsed.addStandOffTag('standoff-2', start, end, { label: 'Person', id: 'persName' });
 
 fs.writeFileSync('./example-result.tei.xml', parsed.xmlString());
 console.log('Done.');
