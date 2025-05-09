@@ -26,7 +26,7 @@ describe('xml2annotation', () => {
 
     const element = createElementFromXML(xml);
     
-    const annotation = xml2annotation(element);
+    const annotation = xml2annotation(element, []);
 
     expect(annotation.id).toBe('ad2e62ab-64d8-43b1-9331-271e5390b9d6');
     expect(annotation.start.path).toBe('//text[@xml:id=\'text-1\']/body[1]/div[1]/p[4]/hi[1]');
@@ -34,7 +34,7 @@ describe('xml2annotation', () => {
     expect(annotation.end.path).toBe('//text[@xml:id=\'text-1\']/body[1]/div[1]/p[4]/hi[1]');
     expect(annotation.end.offset).toBe(15);
     expect(annotation.tags.length).toBe(1);
-    expect(annotation.tags[0]).toBe('Name');
+    expect(annotation.tags[0].label).toBe('Name');
   });
 
 });

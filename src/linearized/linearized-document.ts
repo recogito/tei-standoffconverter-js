@@ -160,7 +160,7 @@ export const createLinearizedTable = (el: Element, tokens: MarkupToken[], namesp
   const annotations = (standOffId?: string) =>
     query.getAnnotations(standOffId)
       .filter(t => t.type === 'open' && t.el).map(t => t.el)
-      .map(xml2annotation);
+      .map(annotationEl => xml2annotation(annotationEl, tokens));
 
   const addStandOff = (id: string) => {
     // Create new elements
