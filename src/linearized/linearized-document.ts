@@ -1,39 +1,15 @@
 import { v4 as uuidv4 } from 'uuid';
-import { doc, evaluateXPath, serializeXML } from '../dom';
+import { evaluateXPath, serializeXML } from '../dom';
 import { annotation2xml, linearized2xml, xml2annotation, xml2linearized } from '../conversion';
 import type { MarkupToken, StandoffAnnotation, Tag } from '../types';
 import { createModifyOperations, createQueryOperations } from './operations';
+import { createDOMUtils } from './dom-utils';
 
 export const createLinearizedTable = (el: Element, tokens: MarkupToken[], namespace = 'http://www.tei-c.org/ns/1.0') => {
 
-  const isCETEIcean = Boolean((el as any).dataset?.origname);
-
+  const dom = createDOMUtils(el, tokens, namespace);
   const query = createQueryOperations(tokens);
-
   const modify = createModifyOperations(tokens);
-
-  const _createElement = (tag: string, attrib?: Record<string, string>): Element => {
-    const el = isCETEIcean 
-      ? doc.createElementNS(namespace, `tei-${tag.toLowerCase()}`)
-      : doc.createElementNS(namespace, tag);
-    
-    if (attrib) {
-      Object.entries(attrib).forEach(([key, value]) => {
-        if (key === 'xml:id') {
-          el.id = value;
-          el.setAttribute('xml:id', value);
-          el.setAttributeNS('http://www.w3.org/XML/1998/namespace', 'id', value);
-        } else {
-          el.setAttribute(key, value);
-        }
-      });
-    }
-
-    if (isCETEIcean)
-      el.setAttribute('data-origname', tag);
-    
-    return el as Element;
-  }
 
   const removeInline = (
     el: Element,
@@ -104,7 +80,7 @@ export const createLinearizedTable = (el: Element, tokens: MarkupToken[], namesp
       const newDepth = d ?? parents.length;
   
       // Create new element
-      const newEl = _createElement(tag, attrib);
+      const newEl = dom.createElement(tag, attrib);
 
       // Insert the new element
       if (b === e) {
@@ -147,7 +123,7 @@ export const createLinearizedTable = (el: Element, tokens: MarkupToken[], namesp
       throw new Error(`Invalid XPath offset: ${xpath}`);
 
     const normalized = path.replace(/\/([^[/]+)/g, (_, p1) => {
-      return isCETEIcean ? '/tei-' + p1.toLowerCase() : '/' + p1;
+      return dom.isCETEIcean ? '/tei-' + p1.toLowerCase() : '/' + p1;
     }).replace(/xml:/g, '');
 
     const parentNode = evaluateXPath(normalized, el);
@@ -188,8 +164,8 @@ export const createLinearizedTable = (el: Element, tokens: MarkupToken[], namesp
 
   const addStandOff = (id: string) => {
     // Create new elements
-    const standOffEl = _createElement('standOff', { 'xml:id': id });
-    const listAnnotationEl = _createElement('listAnnotation');
+    const standOffEl = dom.createElement('standOff', { 'xml:id': id });
+    const listAnnotationEl = dom.createElement('listAnnotation');
     standOffEl.appendChild(listAnnotationEl);
 
     const findLastClosed = (tagName: string) => {
@@ -233,7 +209,7 @@ export const createLinearizedTable = (el: Element, tokens: MarkupToken[], namesp
 
     // Convert annotation
     const annotationEl =  
-      annotation2xml(annotation, namespace, isCETEIcean ? 'tei-' : undefined); 
+      annotation2xml(annotation, namespace, dom.isCETEIcean ? 'tei-' : undefined); 
 
     const annotationTokens = xml2linearized(annotationEl);
 
