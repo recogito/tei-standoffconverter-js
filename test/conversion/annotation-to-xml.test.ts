@@ -12,7 +12,7 @@ const ANNOTATION = {
     path: "//text[@xml:id='text-1']/body[1]/div[1]/p[4]/hi[1]",
     offset: 15
   },
-  tags: [ 'Name' ]
+  tags: [{ label: 'Name' }]
 };
 
 describe('annotation2xml', () => {

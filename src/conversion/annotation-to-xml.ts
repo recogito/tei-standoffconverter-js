@@ -34,7 +34,13 @@ export const annotation2xml = (
   // Tags
   (annotation.tags || []).forEach(tag => {
     const rsEl = _createElement('rs')
-    rsEl.setAttribute('ana', tag);
+
+    if (tag.id) {
+      // TODO add the label to the taxonomy!
+      
+    }
+
+    rsEl.setAttribute('ana', tag.id || tag.label);
     annotationEl.appendChild(rsEl);
   });
 

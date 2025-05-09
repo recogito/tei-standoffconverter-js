@@ -26,7 +26,7 @@ export type StandoffAnnotation = {
 
   note?: string;
 
-  tags: string[];
+  tags: Tag[];
 
   updated?: string;
 
@@ -35,5 +35,13 @@ export type StandoffAnnotation = {
   start: { path: string, offset: number };
 
   end: { path: string, offset: number };
+
+}
+
+export interface Tag {
+
+  label: string;
+
+  id?: string;
 
 }

@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { doc, evaluateXPath, serializeXML } from '../dom';
 import { annotation2xml, linearized2xml, xml2annotation, xml2linearized } from '../conversion';
-import type { MarkupToken, StandoffAnnotation } from '../types';
+import type { MarkupToken, StandoffAnnotation, Tag } from '../types';
 import { createModifyOperations, createQueryOperations } from './operations';
 
 export const createLinearizedTable = (el: Element, tokens: MarkupToken[], namespace = 'http://www.tei-c.org/ns/1.0') => {
@@ -264,9 +264,11 @@ export const createLinearizedTable = (el: Element, tokens: MarkupToken[], namesp
   }
 
   // Convenience method
-  const addStandOffTag = (standOffId: string, begin: number, end: number, tag: string) => {
+  const addStandOffTag = (standOffId: string, begin: number, end: number, tag: string | Tag) => {
     const [startPath, startOffset] = query.getXPointer(begin).split('::');
     const [endPath, endOffset] = query.getXPointer(end).split('::');
+
+    const tagObj: Tag = typeof tag === 'string' ? {label: tag } : tag;
 
     const annotation: StandoffAnnotation = {
       id: uuidv4(),
@@ -278,7 +280,7 @@ export const createLinearizedTable = (el: Element, tokens: MarkupToken[], namesp
         path: endPath, 
         offset: parseInt(endOffset)
       },
-      tags: [tag]
+      tags: [tagObj]
     }
 
     addAnnotation(standOffId, annotation);

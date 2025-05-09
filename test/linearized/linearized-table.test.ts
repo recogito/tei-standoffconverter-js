@@ -230,7 +230,7 @@ describe('createLinearizedTable', () => {
         path: '//text[1]',
         offset: 4
       },
-      tags: ['tag']
+      tags: [{ label: 'tag' }]
     };
 
     table.addAnnotation('standoff-1', annotation);
@@ -263,7 +263,13 @@ describe('createLinearizedTable', () => {
 
     // Add new standOff block
     table.addStandOff('standoff-1');
+
+    const newTokens = table.tokens.filter(t => t.el?.tagName === 'standOff' || t.el?.tagName === 'listAnnotation');
+    expect(newTokens.length).toBe(4);
+
+    // Add simple string standOff tag
     table.addStandOffTag('standoff-1', 2, 4, 'persName');
+    table.addStandOffTag('standoff-1', 9, 11, { label: 'Place', id: 'placeName' });
 
     const xmlStr = table.xmlString();
 
