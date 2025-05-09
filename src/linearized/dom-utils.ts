@@ -1,7 +1,6 @@
 import { doc } from '../dom';
-import type { MarkupToken } from '../types';
 
-export const createDOMUtils = (el: Element, tokens: MarkupToken[], namespace: string) => {
+export const createDOMUtils = (el: Element, namespace: string) => {
 
   const isCETEIcean = Boolean((el as any).dataset?.origname);
   
@@ -29,9 +28,12 @@ export const createDOMUtils = (el: Element, tokens: MarkupToken[], namespace: st
     return el as Element;
   }
 
+  const createText = (text: string) => doc.createTextNode(text);
+
   return {
     isCETEIcean,
-    createElement
+    createElement,
+    createText
   }
 
 }

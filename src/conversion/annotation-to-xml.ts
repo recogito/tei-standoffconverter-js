@@ -1,5 +1,5 @@
 import { doc } from '../dom';
-import type { StandoffAnnotation } from '../types';
+import type { StandoffAnnotation, Tag } from '../types';
 
 /** XML IDs are not allowed to start with a number! **/
 const startsWithNumber = (str: string) =>
@@ -34,13 +34,13 @@ export const annotation2xml = (
   // Tags
   (annotation.tags || []).forEach(tag => {
     const rsEl = _createElement('rs')
+    
+    const ana = tag.id 
+      // Semantic tag
+      ? tag.id.startsWith('http') ? tag.id : `#${tag.id}`
+      : tag.label;
 
-    if (tag.id) {
-      // TODO add the label to the taxonomy!
-      
-    }
-
-    rsEl.setAttribute('ana', tag.id || tag.label);
+    rsEl.setAttribute('ana', ana);
     annotationEl.appendChild(rsEl);
   });
 

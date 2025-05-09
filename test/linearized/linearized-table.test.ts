@@ -302,13 +302,20 @@ describe('createLinearizedTable', () => {
 
     // Add simple string standOff tag
     table.addStandOffTag('standoff-1', 2, 4, 'persName');
-    table.addStandOffTag('standoff-1', 9, 11, { label: 'Place', id: 'placeName' });
+    table.addStandOffTag('standoff-1', 6, 7, { label: 'Place', id: 'placeName' });
+    table.addStandOffTag('standoff-1', 9, 11, { label: 'Feature', id: 'http://www.example.com/feature'});
 
     const xmlStr = table.xmlString();
 
-    expect(xmlStr).toContain('annotation xml:id="uid-');
-    expect(xmlStr).toContain('target="/text[1]::2 /text[1]::4"');
-    expect(xmlStr).toContain('rs ana="persName"');
+    const expectedHeader = '<teiHeader><encodingDesc><classDecl><taxonomy xml:id="taxonomy-standoff-1"><category xml:id="placeName"><catDesc>Place</catDesc></category><category xml:id="http://www.example.com/feature"><catDesc>Feature</catDesc></category></taxonomy></classDecl></encodingDesc></teiHeader>';
+    const expectedStringTag = '<rs ana="persName"/>';
+    const expectedHashIdTag = '<rs ana="#placeName"/>';
+    const expectedURITag = '<rs ana="http://www.example.com/feature"/>';
+
+    expect(xmlStr).toContain(expectedHeader);
+    expect(xmlStr).toContain(expectedStringTag);
+    expect(xmlStr).toContain(expectedHashIdTag);
+    expect(xmlStr).toContain(expectedURITag);
   });
 
 });

@@ -7,7 +7,7 @@ import { createDOMUtils } from './dom-utils';
 
 export const createLinearizedTable = (el: Element, tokens: MarkupToken[], namespace = 'http://www.tei-c.org/ns/1.0') => {
 
-  const dom = createDOMUtils(el, tokens, namespace);
+  const dom = createDOMUtils(el, namespace);
   const query = createQueryOperations(tokens);
   const modify = createModifyOperations(tokens);
 
@@ -191,6 +191,13 @@ export const createLinearizedTable = (el: Element, tokens: MarkupToken[], namesp
 
   // Note: taxonomy is a child of TEI > teiHeader > encodingDesc > classDecl
   const addTaxonomy = (id: string) => {
+    // Don't add taxonomy if it exists already
+    const existing = tokens.find(t => 
+      t.el?.tagName === 'taxonomy' && 
+      t.el?.getAttribute('xml:id') === id);
+
+    if (existing) return;
+
     // DOM manipulation helpers
     const getOpen = (tagName: string, start = 0) =>
       tokens.slice(start).find(t => t.el?.tagName === tagName && t.type === 'open');
@@ -234,8 +241,59 @@ export const createLinearizedTable = (el: Element, tokens: MarkupToken[], namesp
     createTagBefore(classDecl, 'taxonomy', { 'xml:id': id });
   }
 
-  const upsertTaxonomyCategory = (taxonomyId: string, categoryId: string, categoryLabel: string) => {
+  const insertTokens = (toInsert: MarkupToken[], afterToken: MarkupToken) => {
+    const insertPos = afterToken.position;
+    const insertDepth = afterToken.depth! + 1;
 
+    let currentPosition = insertPos;
+
+    for (const token of toInsert) {
+      token.position = currentPosition;
+      token.depth = insertDepth;
+
+      // For text tokens, advance the position counter
+      if (token.type === 'text' && token.text)
+        currentPosition += token.text.length;
+
+      // Insert the token
+      tokens.splice(tokens.indexOf(afterToken), 0, token);
+    }
+
+    // Update positions of all tokens after the insertion
+    const insertedLength = currentPosition - insertPos;
+    if (insertedLength > 0) {
+      for (let i = tokens.indexOf(afterToken) + toInsert.length; i < tokens.length; i++) {
+        tokens[i].position += insertedLength;
+      }
+    }
+  }
+
+  const addTaxonomyCategory = (taxonomyId: string, categoryId: string, categoryLabel: string) => {
+    // Don't insert if the term already exists in the given taxonomy
+    const existing = tokens.find(t => 
+      t.el?.tagName === 'category' && 
+      t.el?.getAttribute('xml:id') === categoryId &&
+      t.el.parentElement?.getAttribute('xml:id') === taxonomyId);
+
+    if (existing) return;
+
+    const taxonomy = query
+      .findByTagName('taxonomy')
+      .filter(t => t.type === 'close')
+      .filter(t => t.el?.getAttribute('xml:id') === taxonomyId);
+
+    if (!taxonomy && taxonomy.length !== 1)
+      throw new Error(`No taxonomy element with id ${taxonomyId}`);
+
+    // Create DOM elements
+    const categoryEl = dom.createElement('category', { 'xml:id': categoryId });
+    const catDescEl = dom.createElement('catDesc');
+    catDescEl.appendChild(dom.createText(categoryLabel));
+    categoryEl.appendChild(catDescEl);
+
+    // Insert tokens
+    const categoryTokens = xml2linearized(categoryEl);
+    insertTokens(categoryTokens, taxonomy[0]);
   } 
 
   const addAnnotation = (standOffId: string, annotation: StandoffAnnotation) => {
@@ -251,36 +309,22 @@ export const createLinearizedTable = (el: Element, tokens: MarkupToken[], namesp
     if (!annotationListToken)
       throw new Error(`No annotation list found in standOff ${standOffId}`);
 
+    // Insert taxonomy terms, if necessary
+    const taxonomyTerms = annotation.tags.filter(t => t.id);
+    if (taxonomyTerms.length > 0) {
+      const taxonomyId = `taxonomy-${standOffId}`;
+
+      addTaxonomy(taxonomyId); // Method skips automatically if the taxonomy exists
+
+      taxonomyTerms.forEach(t => addTaxonomyCategory(taxonomyId, t.id!, t.label));
+    }
+
     // Convert annotation
     const annotationEl =  
       annotation2xml(annotation, namespace, dom.isCETEIcean ? 'tei-' : undefined); 
 
     const annotationTokens = xml2linearized(annotationEl);
-
-    // Insert the annotation tokens
-    const insertPosition = annotationListToken.position;
-    const insertDepth = annotationListToken.depth! + 1;
-  
-    let currentPosition = insertPosition;
-    for (const token of annotationTokens) {
-      token.position = currentPosition;
-      token.depth = insertDepth;
-
-      // For text tokens, advance the position counter
-      if (token.type === 'text' && token.text)
-        currentPosition += token.text.length;
-
-      // Insert the token
-      tokens.splice(tokens.indexOf(annotationListToken), 0, token);
-    }
-
-    // Update positions of all tokens after the insertion
-    const insertedLength = currentPosition - insertPosition;
-    if (insertedLength > 0) {
-      for (let i = tokens.indexOf(standOffClosed) + annotationTokens.length; i < tokens.length; i++) {
-        tokens[i].position += insertedLength;
-      }
-    }
+    insertTokens(annotationTokens, annotationListToken);
   }
 
   // Convenience method
@@ -315,6 +359,7 @@ export const createLinearizedTable = (el: Element, tokens: MarkupToken[], namesp
     addStandOff,
     addStandOffTag,
     addTaxonomy,
+    addTaxonomyCategory,
     annotations,
     convertToInline,
     getCharacterOffset,
