@@ -22,24 +22,33 @@ const flattenTree = (el: Element): FlatRecord[] => {
   
   const processNode = (node: Node, depth: number = 0): void => {
     if (node.nodeType === Constants.ELEMENT_NODE) {
-      result.push({
-        type: 'open',
-        el: node as Element,
-        depth,
-        text: null
-      });
-      
-      // Traverse this node's children
-      for (let i = 0; i < node.childNodes.length; i++) {
-        processNode(node.childNodes[i], depth + 1);
+      if (node.childNodes.length === 0) {
+        result.push({
+          type: 'empty',
+          el: node as Element,
+          depth,
+          text: null
+        })
+      } else {
+        result.push({
+          type: 'open',
+          el: node as Element,
+          depth,
+          text: null
+        });
+        
+        // Traverse this node's children
+        for (let i = 0; i < node.childNodes.length; i++) {
+          processNode(node.childNodes[i], depth + 1);
+        }
+        
+        result.push({
+          type: 'close',
+          el: node as Element,
+          depth,
+          text: null
+        });
       }
-      
-      result.push({
-        type: 'close',
-        el: node as Element,
-        depth,
-        text: null
-      });
     } else if (node.nodeType === Constants.TEXT_NODE) {
       result.push({
         type: 'text',

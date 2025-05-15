@@ -207,11 +207,30 @@ export const createQueryOperations = (tokens: MarkupToken[]) => {
       return segments;
     }
 
-    const parents = tokens.filter(t => t.position <= charOffset && t.type === 'open');
-    if (parents.length === 0)
+    // We need to the last open tag before this position. Note that the 
+    // tag MUST STILL BE OPEN, which means we need to ignore any tag that
+    // got openend and closed before
+    const openTokens: MarkupToken[] = [];
+
+    for (const t of tokens) {
+      if (t.position > charOffset) break;
+
+      if (t.type === 'open') {
+        // Push into our 'open' stack
+        openTokens.push(t);
+      } else  if (t.type === 'close') {
+        const index = openTokens.findIndex(token => token.el === t.el);
+        if (index !== -1) {
+          // Remove from the stack if the element is closed
+          openTokens.splice(index, 1);
+        }
+      }
+    }
+    
+    if (openTokens.length === 0)
       throw new Error(`Invalid offset: ${charOffset}`);
 
-    const parent = parents[parents.length - 1];
+    const parent = openTokens[openTokens.length - 1];
     const path = getXPointerRecursive(parent.el);
     
     return`${path.join('')}::${charOffset - parent.position}`;
