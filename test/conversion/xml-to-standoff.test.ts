@@ -110,11 +110,10 @@ describe('xml2standoff', () => {
     const element = createElementFromXML(xml);
     const result = xml2linearized(element);
 
-    expect(result).toHaveLength(4);
+    expect(result).toHaveLength(3);
     expect(result[0].type).toBe('open');
-    expect(result[1].type).toBe('open');
+    expect(result[1].type).toBe('empty');
     expect(result[2].type).toBe('close');
-    expect(result[3].type).toBe('close');
   });
 
 

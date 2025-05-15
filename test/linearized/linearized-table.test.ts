@@ -235,7 +235,7 @@ describe('createLinearizedTable', () => {
 
     table.addAnnotation('standoff-1', annotation);
 
-    expect(table.tokens.length).toBe(15);
+    expect(table.tokens.length).toBe(14);
 
     const xmlStr = table.xmlString();
     expect(xmlStr).toContain('//text[1]::2');
