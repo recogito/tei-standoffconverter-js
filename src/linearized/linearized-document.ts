@@ -258,14 +258,6 @@ export const createLinearizedTable = (el: Element, tokens: MarkupToken[], namesp
       // Insert the token
       tokens.splice(tokens.indexOf(afterToken), 0, token);
     }
-
-    // Update positions of all tokens after the insertion
-    const insertedLength = currentPosition - insertPos;
-    if (insertedLength > 0) {
-      for (let i = tokens.indexOf(afterToken) + toInsert.length; i < tokens.length; i++) {
-        tokens[i].position += insertedLength;
-      }
-    }
   }
 
   const addTaxonomyCategory = (taxonomyId: string, categoryId: string, categoryLabel: string) => {

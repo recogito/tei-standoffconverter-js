@@ -10,12 +10,12 @@ parsed.addStandOff('standoff-1');
 const tag = { label: 'Person', id: 'persName' };
 
 const tags = [
-  { start: 416, end: 426 },   // first Book
-  { start: 527, end: 535},    // Paradise
-  { start: 615, end: 622},    // Serpent
-  { start: 2809, end: 2816 }, // Heav'ns
-  { start: 2821, end: 2826 }, // Earth
-  { start: 3567, end: 3574 }  // Illumin
+  { start: 547, end: 557 },   // first Book
+  { start: 658, end: 666},    // Paradise
+  { start: 746, end: 753},    // Serpent
+  { start: 2940, end: 2947 }, // Heav'ns
+  { start: 2952, end: 2957 }, // Earth
+  { start: 3698, end: 3705 }  // Illumin
 ];
 
 tags.forEach(({ start, end }) => {
