@@ -42,7 +42,7 @@ Perfect for enriching TEI documents with automatically extracted entities, annot
 
 ## Usage in Node
 
-This library works in Node (using [xmldom](https://github.com/xmldom/xmldom) and [xpath](https://github.com/goto100/xpath) internally).
+This library works in Node (using [xmldom](https://github.com/xmldom/xmldom) and [fontoxpath](https://github.com/FontoXML/fontoxpath) internally).
 
 ```ts
 import { parseXML } from '@recogito/standoff-converter';

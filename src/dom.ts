@@ -73,11 +73,13 @@ if (typeof document !== 'undefined') {
   serializeXML = (element: Element) => element.toString();
 
   evaluateXPath = (expression: string, el: Element) => {
+    const namespaceResolver = (ns: string) => {
+      return ns === 'xml' ? 'http://www.w3.org/XML/1998/namespace' : 'http://www.tei-c.org/ns/1.0'
+    }
 
     return evaluateXPathToFirstNode(expression, el, null, null, {
-      namespaceResolver: (ns: string) => (ns === 'xml') ? "http://www.w3.org/XML/1998/namespace" : "http://www.tei-c.org/ns/1.0"
+      namespaceResolver
     });
-    // return xpath.select1(expression, el);
   }
 
 }

@@ -13,7 +13,7 @@
   "scripts": {
     "start": "vite",
     "build": "vite build",
-    "test": "vitest linearized-table",
+    "test": "vitest",
     "node-example": "node test/node-example.js"
   },
   "exports": {
@@ -38,7 +38,6 @@
   "dependencies": {
     "@xmldom/xmldom": "^0.9.8",
     "fontoxpath": "^3.33.2",
-    "uuid": "^11.1.0",
-    "xpath": "^0.0.34"
+    "uuid": "^11.1.0"
   }
 }
