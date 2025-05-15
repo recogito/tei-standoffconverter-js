@@ -1,8 +1,5 @@
-import xpath from 'xpath';
 import { Node, DOMParser as NodeDOMParser } from '@xmldom/xmldom';
-import {
-  evaluateXPathToFirstNode
-} from "fontoxpath";
+import { evaluateXPathToFirstNode} from 'fontoxpath';
 
 /**
  * Provides browser-vs.-Node abstractions.
