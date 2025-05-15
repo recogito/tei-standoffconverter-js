@@ -5,8 +5,9 @@ const xml = fs.readFileSync('./test/paradise-lost.xml', 'utf8');
 const parsed = parseXML(xml);
 
 const plaintext = parsed.text();
-parsed.addStandOff('standoff-1');
+parsed.addStandOff('standoff-2');
 
+// Use semantic tags (better test case because they alter the DOM!)
 const tag = { label: 'Person', id: 'persName' };
 
 const tags = [
@@ -19,8 +20,8 @@ const tags = [
 ];
 
 tags.forEach(({ start, end }) => {
-  console.log(`Creating tag on: '${plaintext.substring(start, end)}'`);
-  parsed.addStandOffTag('standoff-1', start, end, tag);
+  console.log(`Tagging '${plaintext.substring(start, end)}'`);
+  parsed.addStandOffTag('standoff-2', start, end, tag);
 });
 
 fs.writeFileSync('./example-result.tei.xml', parsed.xmlString());
