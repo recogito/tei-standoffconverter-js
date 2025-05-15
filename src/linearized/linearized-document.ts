@@ -124,7 +124,9 @@ export const createLinearizedTable = (el: Element, tokens: MarkupToken[], namesp
 
     const normalized = path.replace(/\/([^[/]+)/g, (_, p1) => {
       return dom.isCETEIcean ? '/tei-' + p1.toLowerCase() : '/' + p1;
-    }).replace(/xml:/g, '');
+    })
+    // Ignore XML namespaces
+    .replace(/\/([^:/\[\]]+)(?=(?:\[\d+\])?(?:\/|$))/g, (_, p1) => '/*[local-name()="' + p1 + '"]');
 
     const parentNode = evaluateXPath(normalized, el);
 

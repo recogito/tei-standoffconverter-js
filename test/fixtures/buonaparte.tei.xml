@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt>
+        <title>I griev’d for Buonaparte</title>
+        <author>Wordsworth, William (TR-Transatlantic Romanticism, Newman, Pace, and
+          Koenig-Woodyard)</author>
+      </titleStmt>
+      <editionStmt>
+        <p>Transatlantic Romanticism: An Anthology of British, American, and Canadian Literature,
+          1767- 1867</p>
+      </editionStmt>
+      <publicationStmt>
+        <publisher>Pearson Education, Inc.</publisher>
+        <ref>
+          <date>1802</date>
+        </ref>
+        <availability>
+          <p>Creative Commons</p>
+        </availability>
+      </publicationStmt>
+      <sourceDesc>
+        <p>https://tspace.library.utoronto.ca/bitstream/1807/101741/1/Koenig-Woodyard_Anthology.pdf</p>
+      </sourceDesc>
+    </fileDesc>
+    
+  <encodingDesc>
+      
+    <classDecl>
+        <taxonomy xml:id="ngh90jh9bcttu7">
+          <category xml:id="ngh90jh9bcttu7.Name">
+            <catDesc>Name</catDesc>
+          </category>
+          <category xml:id="ngh90jh9bcttu7.Place">
+            <catDesc>Place</catDesc>
+          </category>
+        </taxonomy>
+      <taxonomy xml:id="gdmnnl0kdoej4c"><category xml:id="gdmnnl0kdoej4c.Name"><catDesc>Name</catDesc></category><category xml:id="gdmnnl0kdoej4c.Place"><catDesc>Place</catDesc></category></taxonomy></classDecl></encodingDesc></teiHeader><standOff type="recogito_studio_annotations"><listAnnotation><annotation target="/TEI[1]/teiHeader[1]/fileDesc[1]/titleStmt[1]/author[1]::0 /TEI[1]/teiHeader[1]/fileDesc[1]/titleStmt[1]/author[1]::19" xml:id="uid-ad2e62ab-64d8-43b1-9331-271e5390b9d6"><revisionDesc><change who="#uid-6ff04674-b299-4c7c-bbea-79d6b89d92ba" when="2025-04-23T12:19:44.949Z" status="created" /><change who="#uid-6ff04674-b299-4c7c-bbea-79d6b89d92ba" when="2025-04-23T12:19:43.637Z" status="modified" /></revisionDesc><note resp="#uid-6ff04674-b299-4c7c-bbea-79d6b89d92ba">Author</note><rs ana="Name" /><respStmt xml:id="uid-6ff04674-b299-4c7c-bbea-79d6b89d92ba"><name>aboutgeo</name></respStmt></annotation><annotation target="/TEI[1]/teiHeader[1]/fileDesc[1]/editionStmt[1]/p[1]::43 /TEI[1]/teiHeader[1]/fileDesc[1]/editionStmt[1]/p[1]::50" xml:id="uid-6b070345-1e08-44de-b2b1-5044ad9c153a"><revisionDesc><change who="#uid-6ff04674-b299-4c7c-bbea-79d6b89d92ba" when="2025-04-23T12:19:56.383Z" status="created" /><change who="#uid-6ff04674-b299-4c7c-bbea-79d6b89d92ba" when="2025-04-23T12:19:56.056Z" status="modified" /></revisionDesc><note resp="#uid-6ff04674-b299-4c7c-bbea-79d6b89d92ba">United Kingdom</note><rs ana="Place" /><respStmt xml:id="uid-6ff04674-b299-4c7c-bbea-79d6b89d92ba"><name>aboutgeo</name></respStmt></annotation><annotation target="/TEI[1]/teiHeader[1]/fileDesc[1]/editionStmt[1]/p[1]::52 /TEI[1]/teiHeader[1]/fileDesc[1]/editionStmt[1]/p[1]::60" xml:id="uid-a0ab9bad-99f6-416f-87ed-25460b9d041e"><revisionDesc><change who="#uid-6ff04674-b299-4c7c-bbea-79d6b89d92ba" when="2025-04-23T12:20:06.962Z" status="created" /><change who="#uid-6ff04674-b299-4c7c-bbea-79d6b89d92ba" when="2025-04-23T12:20:06.606Z" status="modified" /></revisionDesc><note resp="#uid-6ff04674-b299-4c7c-bbea-79d6b89d92ba">United States</note><rs ana="Place" /><respStmt xml:id="uid-6ff04674-b299-4c7c-bbea-79d6b89d92ba"><name>aboutgeo</name></respStmt></annotation><annotation target="/TEI[1]/teiHeader[1]/fileDesc[1]/editionStmt[1]/p[1]::66 /TEI[1]/teiHeader[1]/fileDesc[1]/editionStmt[1]/p[1]::74" xml:id="uid-5293bd92-8204-4063-99e6-b1f5699b0d67"><revisionDesc><change who="#uid-6ff04674-b299-4c7c-bbea-79d6b89d92ba" when="2025-04-23T12:20:15.020Z" status="created" /><change who="#uid-6ff04674-b299-4c7c-bbea-79d6b89d92ba" when="2025-04-23T12:20:14.655Z" status="modified" /></revisionDesc><note resp="#uid-6ff04674-b299-4c7c-bbea-79d6b89d92ba">Canada</note><rs ana="Place" /><respStmt xml:id="uid-6ff04674-b299-4c7c-bbea-79d6b89d92ba"><name>aboutgeo</name></respStmt></annotation></listAnnotation></standOff>
+  <text xml:id="text-1">
+    <body>
+      <div>
+        <p rend="h4" xml:id="note1">I griev'd for Buonaparte<hi rend="superscript">
+            <ref target="#note1back">1</ref>
+          </hi></p>
+        <p rend="h5">by William Wordsworth</p>
+        <p rend="h6"><hi rend="italic">Courtesy of</hi> Transatlantic Romanticism: An Anthology of
+          British, American, and Canadian Literature, 1767–1867. <hi rend="italic">Eds. Lance
+          Newman, Joel Pace, and Chris Koenig-Woodyard. Pearson Education, Inc., 2006. (Any endnotes
+          are © 2006 Lance Newman, Joel Pace, and Chris Koenig-Woodyard. All rights reserved)</hi>.</p>
+        <lb />
+        <div type="poem">
+          <lg type="stanza">
+            <l rend="lineno">I griev'd for Buonaparte, with a vain</l>
+            <l rend="lineno">And an unthinking grief! the vital blood</l>
+            <l rend="lineno">Of that Man's mind what can it be? What food</l>
+            <l rend="lineno">Fed his first hopes? What knowledge could <hi rend="italic">He</hi>
+              gain?</l>
+            <l rend="lineno">'Tis not in battles that from youth we train</l>
+            <l rend="lineno">The Governor who must be wise and good,</l>
+            <l rend="lineno">And temper with the sternness of the brain</l>
+            <l rend="lineno">Thoughts motherly, and meek as womanhood.</l>
+            <l rend="lineno">Wisdom doth live with children round her knees:</l>
+            <l rend="lineno">Books, leisure, perfect freedom, and the talk</l>
+            <l rend="lineno">Man holds with week-day man in the hourly walk</l>
+            <l rend="lineno">Of the mind's business: these are the degrees</l>
+            <l rend="lineno">By which true Sway doth mount; this is the stalk</l>
+            <l rend="lineno">True Power doth grow on; and her rights are these.</l>
+          </lg>
+        </div>
+        <div>
+          <p rend="style495">—1802</p>
+          <lb rend="horizontal-rule" />
+          <p xml:id="note1back"><ref target="#note1">1.</ref> Napoleon Bonaparte (1769–1821), who in
+            1802 declared himself First Consul of France for life and invaded Switzerland. <ref target="#note1">Back</ref></p>
+        </div>
+      </div>
+    </body>
+  </text>
+</TEI>

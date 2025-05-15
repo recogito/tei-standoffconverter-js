@@ -1,8 +1,11 @@
 import { describe, it, expect } from 'vitest';
+import fs from 'fs';
 import { DOMParser } from '@xmldom/xmldom';
 import { parseXML } from '../../src';
 import { createLinearizedTable } from '../../src/linearized';
 import type { MarkupToken, StandoffAnnotation } from '../../src/types';
+
+import BUONAPARTE_ANNOTATIONS from '../fixtures/buonaparte-annotations.json';
 
 describe('createLinearizedTable', () => {
   const createDocument = () => {
@@ -63,6 +66,7 @@ describe('createLinearizedTable', () => {
     expect(pointer).toBe('/TEI[1]/text[1]/body[1]/div[3]/p[1]::5');
   });
 
+
   it('should generate correct character offsets', () => {
     const xml = `
       <TEI>
@@ -91,7 +95,7 @@ describe('createLinearizedTable', () => {
     expect(offset).toBe(151);
   });
   
-
+ 
   it('should correctly add inline elements', () => {
     const doc = createDocument();
     const root = doc.createElement('root') as unknown as Element;
@@ -316,6 +320,41 @@ describe('createLinearizedTable', () => {
     expect(xmlStr).toContain(expectedStringTag);
     expect(xmlStr).toContain(expectedHashIdTag);
     expect(xmlStr).toContain(expectedURITag);
+  });
+
+  it('should generate correct character offsets in complex markup', () => {
+    const xml = fs.readFileSync('./test/fixtures/buonaparte.tei.xml', 'utf8');
+
+    const parsed = parseXML(xml);
+
+    // 'Wordsworth, William' from 57 to 76
+    const plaintext = parsed.text();
+    const persName = plaintext.substring(57, 76);
+    expect(persName).toBe('Wordsworth, William');
+
+    const startPath = parsed.getXPointer(57);
+    expect(startPath).toBe('/TEI[1]/teiHeader[1]/fileDesc[1]/titleStmt[1]/author[1]::0');
+    
+    const endPath = parsed.getXPointer(76);
+    expect(endPath).toBe('/TEI[1]/teiHeader[1]/fileDesc[1]/titleStmt[1]/author[1]::19');
+
+    const startOffset = parsed.getCharacterOffset(startPath);
+    expect(startOffset).toBe(57);
+
+    const endOffset = parsed.getCharacterOffset(endPath);
+    expect(endOffset).toBe(76);
+
+    BUONAPARTE_ANNOTATIONS.forEach(annotation => {
+      const { from, to, tag } = annotation;
+      
+      const fromOffset = parsed.getCharacterOffset(from);
+      // const toOffset = parsed.getCharacterOffset(to);
+      console.log({ fromOffset })
+
+      // parsed.addInline(fromOffset, toOffset, tag);
+    });
+
+    // console.log(parsed.xmlString());
   });
 
 });
