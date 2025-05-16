@@ -44,8 +44,12 @@ if (typeof document !== 'undefined') {
   }
 
   evaluateXPath = (expression: string, el: Element) => {
+    const normalized = expression.replace(/\/([^[/]+)/g, (_, p1) => (
+      '/tei-' + p1.toLowerCase()
+    )).replace(/xml:/g, ''); // CETEIcean/browser doesn't handle the 'xml:' namespace
+    
     return document.evaluate(
-      expression, 
+      normalized, 
       el, 
       null, 
       XPathResult.FIRST_ORDERED_NODE_TYPE,
@@ -70,13 +74,14 @@ if (typeof document !== 'undefined') {
   serializeXML = (element: Element) => element.toString();
 
   evaluateXPath = (expression: string, el: Element) => {
+    // Ignore XML namespaces
+    const normalized = expression.replace(/\/([^:/\[\]]+)(?=(?:\[\d+\])?(?:\/|$))/g, (_, p1) => '/*[local-name()="' + p1 + '"]');
+
     const namespaceResolver = (ns: string) => {
       return ns === 'xml' ? 'http://www.w3.org/XML/1998/namespace' : 'http://www.tei-c.org/ns/1.0'
     }
 
-    return evaluateXPathToFirstNode(expression, el, null, null, {
-      namespaceResolver
-    });
+    return evaluateXPathToFirstNode(normalized, el, null, null, { namespaceResolver });
   }
 
 }

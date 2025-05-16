@@ -122,13 +122,7 @@ export const createLinearizedTable = (el: Element, tokens: MarkupToken[], namesp
     if (isNaN(offset))
       throw new Error(`Invalid XPath offset: ${xpath}`);
 
-    const normalized = path.replace(/\/([^[/]+)/g, (_, p1) => {
-      return dom.isCETEIcean ? '/tei-' + p1.toLowerCase() : '/' + p1;
-    })
-    // Ignore XML namespaces
-    .replace(/\/([^:/\[\]]+)(?=(?:\[\d+\])?(?:\/|$))/g, (_, p1) => '/*[local-name()="' + p1 + '"]');
-
-    const parentNode = evaluateXPath(normalized, el);
+    const parentNode = evaluateXPath(path, el);
 
     const token = tokens.find(t => t.el === parentNode && t.type === 'open');
     return token ? token.position + offset : null;
