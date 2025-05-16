@@ -1,6 +1,6 @@
 {
   "name": "@recogito/standoff-converter",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Convert between TEI/XML and plaintext without losing markup context",
   "license": "MIT",
   "type": "module",
