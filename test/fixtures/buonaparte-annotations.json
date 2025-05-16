@@ -1,9 +1,9 @@
 [
-  { "tag": "persName", "from": "/TEI[1]/teiHeader[1]/fileDesc[1]/titleStmt[1]/author[1]::0", "to": "/TEI[1]/teiHeader[1]/fileDesc[1]/titleStmt[1]/author[1]::19" },
-  { "tag": "placeName", "from": "/TEI[1]/teiHeader[1]/fileDesc[1]/editionStmt[1]/p[1]::43", "to": "/TEI[1]/teiHeader[1]/fileDesc[1]/editionStmt[1]/p[1]::50" },
-  { "tag": "placeName", "from": "/TEI[1]/teiHeader[1]/fileDesc[1]/editionStmt[1]/p[1]::52", "to": "/TEI[1]/teiHeader[1]/fileDesc[1]/editionStmt[1]/p[1]::60" },
-  { "tag": "placeName", "from": "/TEI[1]/teiHeader[1]/fileDesc[1]/editionStmt[1]/p[1]::66", "to": "/TEI[1]/teiHeader[1]/fileDesc[1]/editionStmt[1]/p[1]::74" },
-  { "tag": "persName", "from": "//p[@xml:id='note1']::14", "to": "//p[@xml:id='note1']::24" },
-  { "tag": "persName", "from": "//text[@xml:id='text-1']/body[1]/div[1]/p[2]::3", "to": "//text[@xml:id='text-1']/body[1]/div[1]/p[2]::21" },
-  { "tag": "placeName", "from": "//p[@xml:id='note1back']::120", "to": "//p[@xml:id='note1back']::131" }
+  { "quote": "Wordsworth, William", "tag": "persName", "from": "/TEI[1]/teiHeader[1]/fileDesc[1]/titleStmt[1]/author[1]::0", "to": "/TEI[1]/teiHeader[1]/fileDesc[1]/titleStmt[1]/author[1]::19" },
+  { "quote": "British", "tag": "placeName", "from": "/TEI[1]/teiHeader[1]/fileDesc[1]/editionStmt[1]/p[1]::43", "to": "/TEI[1]/teiHeader[1]/fileDesc[1]/editionStmt[1]/p[1]::50" },
+  { "quote": "American", "tag": "placeName", "from": "/TEI[1]/teiHeader[1]/fileDesc[1]/editionStmt[1]/p[1]::52", "to": "/TEI[1]/teiHeader[1]/fileDesc[1]/editionStmt[1]/p[1]::60" },
+  { "quote": "Canadian", "tag": "placeName", "from": "/TEI[1]/teiHeader[1]/fileDesc[1]/editionStmt[1]/p[1]::66", "to": "/TEI[1]/teiHeader[1]/fileDesc[1]/editionStmt[1]/p[1]::74" },
+  { "quote": "Buonaparte", "tag": "persName", "from": "//p[@xml:id='note1']::14", "to": "//p[@xml:id='note1']::24" },
+  { "quote": "William Wordsworth", "tag": "persName", "from": "//text[@xml:id='text-1']/body[1]/div[1]/p[2]::3", "to": "//text[@xml:id='text-1']/body[1]/div[1]/p[2]::21" },
+  { "quote": "Switzerland", "tag": "placeName", "from": "//p[@xml:id='note1back']::120", "to": "//p[@xml:id='note1back']::131" }
 ]

@@ -322,7 +322,7 @@ describe('createLinearizedTable', () => {
     expect(xmlStr).toContain(expectedURITag);
   });
 
-  it('should generate correct character offsets in complex markup', () => {
+  it('should generate correct character offsets with real-world markup and XPaths', () => {
     const xml = fs.readFileSync('./test/fixtures/buonaparte.tei.xml', 'utf8');
 
     const parsed = parseXML(xml);
@@ -348,13 +348,17 @@ describe('createLinearizedTable', () => {
       const { from, to, tag } = annotation;
       
       const fromOffset = parsed.getCharacterOffset(from);
-      // const toOffset = parsed.getCharacterOffset(to);
-      console.log({ fromOffset })
+      const toOffset = parsed.getCharacterOffset(to);
 
-      // parsed.addInline(fromOffset, toOffset, tag);
+      parsed.addInline(fromOffset, toOffset, tag);
     });
 
-    // console.log(parsed.xmlString());
+    const serialized = parsed.xmlString();
+
+    BUONAPARTE_ANNOTATIONS.forEach(annotation => {
+      const { tag, quote } = annotation;
+      expect(serialized).toContain(`<${tag}>${quote}</${tag}>`);
+    });
   });
 
 });
