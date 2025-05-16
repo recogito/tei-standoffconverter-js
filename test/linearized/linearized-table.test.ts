@@ -69,7 +69,7 @@ describe('createLinearizedTable', () => {
 
   it('should generate correct character offsets', () => {
     const xml = `
-      <TEI>
+      <TEI xmlns="http://www.tei-c.org/ns/1.0">
         <teiHeader>
           <fileDesc>
             <titleStmt>
@@ -321,7 +321,7 @@ describe('createLinearizedTable', () => {
     expect(xmlStr).toContain(expectedHashIdTag);
     expect(xmlStr).toContain(expectedURITag);
   });
-
+  
   it('should generate correct character offsets with real-world markup and XPaths', () => {
     const xml = fs.readFileSync('./test/fixtures/buonaparte.tei.xml', 'utf8');
 
@@ -360,5 +360,6 @@ describe('createLinearizedTable', () => {
       expect(serialized).toContain(`<${tag}>${quote}</${tag}>`);
     });
   });
+
 
 });

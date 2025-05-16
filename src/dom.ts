@@ -1,5 +1,18 @@
 import { Node, DOMParser as NodeDOMParser } from '@xmldom/xmldom';
-import { evaluateXPathToFirstNode} from 'fontoxpath';
+import xpath from 'xpath';
+
+const addNamespacePrefix = (xpath: string, prefix = 'tei') =>
+  // This pattern matches element names but not predicates or numbers
+  xpath.replace(
+    /(\/\/?|\[)([a-zA-Z_][a-zA-Z0-9_\-\.]*?)(?=(\[|\]|\/|$|\s|@))/g, 
+    (match, separator, name) => {
+      // Don't prefix if it already has a namespace
+      if (name.includes(':'))
+        return match;
+      
+      return `${separator}${prefix}:${name}`;
+    }
+  );
 
 /**
  * Provides browser-vs.-Node abstractions.
@@ -74,14 +87,24 @@ if (typeof document !== 'undefined') {
   serializeXML = (element: Element) => element.toString();
 
   evaluateXPath = (expression: string, el: Element) => {
+    // ** fontoxpath version **
     // Ignore XML namespaces
-    const normalized = expression.replace(/\/([^:/\[\]]+)(?=(?:\[\d+\])?(?:\/|$))/g, (_, p1) => '/*[local-name()="' + p1 + '"]');
+    // const normalized = expression.replace(/\/([^:/\[\]]+)(?=(?:\[\d+\])?(?:\/|$))/g, (_, p1) => '/*[local-name()="' + p1 + '"]');
+    // 
+    // const namespaceResolver = (ns: string) => {
+    //   return ns === 'xml' ? 'http://www.w3.org/XML/1998/namespace' : 'http://www.tei-c.org/ns/1.0'
+    // }
+    // 
+    // return evaluateXPathToFirstNode(normalized, el, null, null, { namespaceResolver });
+    
+    const normalized = addNamespacePrefix(expression);
+  
+    const select = xpath.useNamespaces({
+      'tei': 'http://www.tei-c.org/ns/1.0',
+      'xml': 'http://www.w3.org/XML/1998/namespace' 
+    });
 
-    const namespaceResolver = (ns: string) => {
-      return ns === 'xml' ? 'http://www.w3.org/XML/1998/namespace' : 'http://www.tei-c.org/ns/1.0'
-    }
-
-    return evaluateXPathToFirstNode(normalized, el, null, null, { namespaceResolver });
+    return select(normalized, el, true);
   }
 
 }
