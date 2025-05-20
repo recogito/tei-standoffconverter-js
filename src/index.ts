@@ -9,3 +9,5 @@ export const parseXML = (arg: Element | string) => {
 }
 
 export { isInlinable } from './utils';
+
+export * from './types';
