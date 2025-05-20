@@ -64,7 +64,7 @@
 
           const parsed = parseXML(el);
 
-          // Get XPointer expression for 'first Book'
+          /* Get XPointer expression for 'first Book'
           const start = parsed.getXPointer(555);
           const end = parsed.getXPointer(565);
           console.log({ start, end });
@@ -78,13 +78,10 @@
 
           // Highlight 'first' 
           parsed.addInline(startOffset + 21, startOffset + 26, 'note', { role: 'highlighting' });
+          */
 
           const annotations = parsed.annotations('standoff-1');
           console.log(annotations);
-
-          // parsed.addStandOff('standoff-2');
-          // parsed.addStandOffTag('standoff-2', startOffset + 21, endOffset + 26, 'persName');
-          // console.log(parsed.xmlString());
 
           const serialized = parsed.xml();
           document.getElementById('serialized').appendChild(serialized);

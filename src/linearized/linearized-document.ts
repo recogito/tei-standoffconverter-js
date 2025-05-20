@@ -4,6 +4,7 @@ import { annotation2xml, linearized2xml, xml2annotation, xml2linearized } from '
 import type { MarkupToken, StandoffAnnotation, Tag } from '../types';
 import { createModifyOperations, createQueryOperations } from './operations';
 import { createDOMUtils } from './dom-utils';
+import { getInlinableTagName, isInlinable } from '../utils';
 
 export const createLinearizedTable = (el: Element, tokens: MarkupToken[], namespace = 'http://www.tei-c.org/ns/1.0') => {
 
@@ -128,23 +129,17 @@ export const createLinearizedTable = (el: Element, tokens: MarkupToken[], namesp
     return token ? token.position + offset : null;
   }
 
-  const convertToInline = (el: Element) => {
-    const tagName = (el as HTMLElement).dataset.origname || el.tagName;
-    if (tagName.toLowerCase() !== 'annotation')
-      throw new Error('Element is not an annotation');
+  const convertToInline = (annotation: StandoffAnnotation, allowedTags?: string[]) => {
+    if (!isInlinable(annotation, allowedTags)) return;
+  
+    const tagName = getInlinableTagName(annotation, allowedTags);
+  
+    const { start, end } = annotation;
+    
+    const startOffset = getCharacterOffset(`${start.path}::${start.offset}`);
+    const endOffset = getCharacterOffset(`${end.path}::${end.offset}`);
 
-    const target = el.getAttribute('target');
-    if (!target)
-      throw new Error('Cannot convert annotation - missing target attribute');
-
-    const [start, end] = target.split(' ');
-    if (!start || !end)
-      throw new Error(`Invalid target: ${target}`);
-
-    const startOffset = getCharacterOffset(start);
-    const endOffset = getCharacterOffset(end);
-
-    addInline(startOffset, endOffset, 'tei-note');
+    addInline(startOffset, endOffset, tagName);
   }
 
   const xml = () => {

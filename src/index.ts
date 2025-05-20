@@ -7,3 +7,5 @@ export const parseXML = (arg: Element | string) => {
   const linearized = xml2linearized(el);
   return createLinearizedTable(el, linearized);
 }
+
+export { isInlinable } from './utils';
