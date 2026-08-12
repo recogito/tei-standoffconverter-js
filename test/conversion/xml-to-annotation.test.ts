@@ -9,7 +9,23 @@ describe('xml2annotation', () => {
     return parser.parseFromString(xmlString, 'text/xml').documentElement as unknown as Element;
   }
 
-  it('should correctly parse an annotation from XML', () => {
+  it('should parse tags from the `ana` attribute on the annotation element', () => {
+    const xml = `
+      <annotation target="//text[@xml:id='text-1']/body[1]/div[1]/p[4]/hi[1]::5 //text[@xml:id='text-1']/body[1]/div[1]/p[4]/hi[1]::15" xml:id="uid-ad2e62ab-64d8-43b1-9331-271e5390b9d6" ana="Name Place">
+        <revisionDesc>
+          <change who="#uid-6ff04674-b299-4c7c-bbea-79d6b89d92ba" when="2025-04-23T12:19:44.949Z" status="created"/>
+        </revisionDesc>
+      </annotation>
+    `;
+
+    const annotation = xml2annotation(createElementFromXML(xml), []);
+
+    expect(annotation.id).toBe('ad2e62ab-64d8-43b1-9331-271e5390b9d6');
+    expect(annotation.tags.length).toBe(2);
+    expect(annotation.tags.map(t => t.label)).toEqual(['Name', 'Place']);
+  });
+
+  it('should parse tags from legacy <rs> children when `ana` is absent', () => {
     const xml = `
       <annotation target="//text[@xml:id='text-1']/body[1]/div[1]/p[4]/hi[1]::5 //text[@xml:id='text-1']/body[1]/div[1]/p[4]/hi[1]::15" xml:id="uid-ad2e62ab-64d8-43b1-9331-271e5390b9d6">
         <revisionDesc>
@@ -25,7 +41,7 @@ describe('xml2annotation', () => {
     `;
 
     const element = createElementFromXML(xml);
-    
+
     const annotation = xml2annotation(element, []);
 
     expect(annotation.id).toBe('ad2e62ab-64d8-43b1-9331-271e5390b9d6');

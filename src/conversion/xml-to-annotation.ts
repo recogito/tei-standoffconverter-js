@@ -43,11 +43,17 @@ export const xml2annotation = (annotationEl: Element, tokens: MarkupToken[]): St
   if (isNaN(startOffset) || isNaN(endOffset))
     throw new Error(`Invalid annotation target: ${target}`);
 
-  const rs = getChildren(annotationEl, 'rs');
+  // Tags are space-separated in the `ana` attribute on <annotation>. 
+  // Older documents instead carry one <rs ana="..."/> child per tag,
+  // so check for that when the attribute is absent
+  const anaAttr = annotationEl.getAttribute('ana');
+  const anaValues = anaAttr
+    ? anaAttr.split(' ').filter(Boolean)
+    : getChildren(annotationEl, 'rs')
+        .map(el => el.getAttribute('ana'))
+        .filter(Boolean);
 
-  const tags = rs.map(el => {
-    const ana = el.getAttribute('ana');
-
+  const tags = anaValues.map(ana => {
     const id = ana.startsWith('#') ? ana.substring(1) : ana;
     const term = taxonomies.getTerm(id);
     return term ? { label: term.desc, id: term.id } : { label: ana }

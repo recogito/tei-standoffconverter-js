@@ -239,12 +239,12 @@ describe('createLinearizedTable', () => {
 
     table.addAnnotation('standoff-1', annotation);
 
-    expect(table.tokens.length).toBe(14);
+    expect(table.tokens.length).toBe(12);
 
     const xmlStr = table.xmlString();
     expect(xmlStr).toContain('//text[1]::2');
     expect(xmlStr).toContain('//text[1]::4');
-    expect(xmlStr).toContain('rs ana="tag"');
+    expect(xmlStr).toContain('ana="tag"');
   });
 
   it('should correctly insert taxonomy elements', () => {
@@ -312,9 +312,9 @@ describe('createLinearizedTable', () => {
     const xmlStr = table.xmlString();
 
     const expectedHeader = '<teiHeader><encodingDesc><classDecl><taxonomy xml:id="taxonomy-standoff-1"><category xml:id="placeName"><catDesc>Place</catDesc></category><category xml:id="http://www.example.com/feature"><catDesc>Feature</catDesc></category></taxonomy></classDecl></encodingDesc></teiHeader>';
-    const expectedStringTag = '<rs ana="persName"/>';
-    const expectedHashIdTag = '<rs ana="#placeName"/>';
-    const expectedURITag = '<rs ana="http://www.example.com/feature"/>';
+    const expectedStringTag = 'ana="persName"';
+    const expectedHashIdTag = 'ana="#placeName"';
+    const expectedURITag = 'ana="http://www.example.com/feature"';
 
     expect(xmlStr).toContain(expectedHeader);
     expect(xmlStr).toContain(expectedStringTag);
