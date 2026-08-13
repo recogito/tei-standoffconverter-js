@@ -32,17 +32,16 @@ export const annotation2xml = (
   annotationEl.setAttribute('target', target);
 
   // Tags
-  (annotation.tags || []).forEach(tag => {
-    const rsEl = _createElement('rs')
-    
-    const ana = tag.id 
+  const ana = (annotation.tags || [])
+    .map(tag => tag.id
       // Semantic tag
       ? tag.id.startsWith('http') ? tag.id : `#${tag.id}`
-      : tag.label;
+      : tag.label)
+    .filter(Boolean)
+    .join(' ');
 
-    rsEl.setAttribute('ana', ana);
-    annotationEl.appendChild(rsEl);
-  });
+  if (ana)
+    annotationEl.setAttribute('ana', ana);
 
   return annotationEl;
 }

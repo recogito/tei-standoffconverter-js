@@ -39,10 +39,20 @@ describe('annotation2xml', () => {
     expect(endPath).toBe('//text[@xml:id=\'text-1\']/body[1]/div[1]/p[4]/hi[1]');
     expect(endOffset).toBe('15');
     
-    const tags = getChildren(el, 'rs');
-    expect(tags.length).toBe(1);
-    expect(tags[0].tagName).toBe('rs');
-    expect(tags[0].getAttribute('ana')).toBe('Name');
+    // Tags are written as the `ana` attribute on the annotation element,
+    // not as <rs> children.
+    expect(el.getAttribute('ana')).toBe('Name');
+    expect(getChildren(el, 'rs').length).toBe(0);
+  });
+
+  it('should join multiple tags into a space-separated `ana`', () => {
+    const el = annotation2xml({
+      ...ANNOTATION,
+      tags: [{ label: 'Person', id: 'person' }, { label: 'Place', id: 'place' }]
+    });
+
+    expect(el.getAttribute('ana')).toBe('#person #place');
+    expect(getChildren(el, 'rs').length).toBe(0);
   });
 
 });
