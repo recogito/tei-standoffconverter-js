@@ -28,16 +28,16 @@
     "node": ">=16.14.0"
   },
   "devDependencies": {
-    "@types/node": "^22.15.19",
-    "CETEIcean": "^1.9.4",
+    "@types/node": "^26.2.0",
+    "CETEIcean": "^1.9.5",
     "typescript": "^5.8.3",
-    "vite": "^6.3.5",
+    "vite": "^6.4.3",
     "vite-plugin-dts": "^4.5.4",
-    "vitest": "^3.1.4"
+    "vitest": "^3.2.7"
   },
   "dependencies": {
-    "@xmldom/xmldom": "^0.9.8",
-    "uuid": "^11.1.0",
+    "@xmldom/xmldom": "^0.9.11",
+    "uuid": "^14.0.1",
     "xpath": "^0.0.34"
   }
 }
